@@ -20,11 +20,18 @@ let tools = [
         description: "Real-time hand tracking with joint angle calculation and IK command output for robotics control.",
         link: "./tools/hand-ik-controller.html",
         icon: "fas fa-robot"
+    },
+    {
+        id: 4,
+        title: "HTML Code Previewer",
+        description: "Real-time HTML validation and preview tool. Check your code, visualize your design, and open in a new tab.",
+        link: "./tools/html-previewer-tool.html",
+        icon: "fas fa-code"
     }
 ];
 
 // Initialize window.allTools with the initial set of tools
-window.allTools = [...tools]; // This will now include the Hand IK Controller
+window.allTools = [...tools]; // This will now include the Hand IK Controller and HTML Previewer
 
 // Function to render tool cards (this one will be effectively overridden by the one at the bottom, but good to keep consistent)
 function renderTools() {
@@ -64,7 +71,7 @@ function renderTools() {
 // Function to add a new tool (basic implementation)
 function addNewTool() {
     const title = prompt("Enter tool title:");
-    if (!title) return;
+    if (!title) return; 
     const description = prompt("Enter tool description:");
     if (!description) return;
     const link = prompt("Enter tool link (URL):");
@@ -80,7 +87,7 @@ function addNewTool() {
     };
 
     window.allTools.push(newTool); // Add to the main list
-
+    
     // If a search is active, clear it to show all tools including the new one,
     // or decide if you want to re-filter. For simplicity, we'll re-render all.
     const searchInput = document.getElementById('search-tools');
@@ -108,12 +115,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 const description = tool.description.toLowerCase();
                 return title.includes(searchTerm) || description.includes(searchTerm);
             });
-
+            
             // Temporarily modify the global 'tools' array for rendering
             // This is a simplified approach. For more complex scenarios,
             // you might want to pass the filtered list directly to renderTools
             // or have renderTools accept a list to render.
-
+            
             // Store a reference to the original full list of tools
             // window.allTools is now initialized globally at the start of the script.
             // if (typeof window.allTools === 'undefined') {
@@ -125,16 +132,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 const description = tool.description.toLowerCase();
                 return title.includes(searchTerm) || description.includes(searchTerm);
             });
-
+            
             // Render the filtered tools without modifying the global `tools` array permanently
-
+            
             // Use a temporary variable for rendering to avoid conflicts if renderTools uses global `tools`
             const toolsToDisplay = window.allTools.filter(tool => {
                 const title = tool.title.toLowerCase();
                 const description = tool.description.toLowerCase();
                 return title.includes(searchTerm) || description.includes(searchTerm);
             });
-
+            
             // Modify renderTools to accept a list, or manage state carefully
             // For this iteration, we'll adapt renderTools slightly or ensure it uses the passed list
             renderFilteredTools(toolsToDisplay);
