@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTML Code Previewer</title>
+    <!-- Note: The previewer's own styles are self-contained in the div below -->
+    <style>
+        /* Basic body styling for the tool page itself, if needed */
+        body {
+            margin: 0;
+            background-color: #f0f2f5; /* A neutral background for the page */
+        }
+    </style>
+</head>
+<body>
+
+    <div id="sbd-html-previewer" class="sbd-html-previewer">
+      <style>
+        /* Scoped styles for the previewer */
+        #sbd-html-previewer {
+          font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+          max-width: 100%; /* Changed from fixed max-width to allow it to be a component within a page */
+          margin: 0 auto; /* Centering if it's narrower than viewport */
+          padding: 20px;
+          border-radius: 8px;
+          background: linear-gradient(135deg, #1C2133 0%, #2D4C56 100%);
+          color: white;
+          box-sizing: border-box;
+        }
+
+        #sbd-html-previewer *,
+        #sbd-html-previewer *:before,
+        #sbd-html-previewer *:after {
+          box-sizing: border-box;
+        }
+
+        #sbd-html-previewer h2 {
+          color: white;
+          font-size: 1.25rem;
+          font-weight: 600;
+          margin-bottom: 1rem;
+          font-family: inherit;
+        }
+
+        #sbd-html-previewer .preview-title {
+          font-size: 2rem;
+          font-weight: 700;
+          margin-bottom: 1rem;
+          color: white;
+          font-family: inherit;
+        }
+
+        #sbd-html-previewer .preview-description {
+          color: #dddddd;
+          margin-bottom: 2rem;
+          font-family: inherit;
+        }
+
+        #sbd-html-previewer .title-bar {
+          width: 48px;
+          height: 4px;
+          background-color: #9A4B8C;
+          margin-bottom: 1.5rem;
+        }
+
+        #sbd-html-previewer .grid-container {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 2rem;
+        }
+
+        @media (min-width: 768px) {
+          #sbd-html-previewer .grid-container {
+            grid-template-columns: 1fr 1fr;
+          }
+        }
+
+        #sbd-html-previewer .code-textarea {
+          width: 100%;
+          min-height: 300px;
+          padding: 1rem;
+          background-color: rgba(28, 33, 51, 0.8);
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          color: white;
+          font-family: monospace;
+          font-size: 16px;
+          border-radius: 0.375rem;
+          resize: vertical;
+          line-height: 1.5;
+        }
+
+        #sbd-html-previewer .preview-container {
+          width: 100%;
+          min-height: 300px;
+          background-color: rgba(255, 255, 255, 0.1);
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          border-radius: 0.375rem;
+          padding: 1rem;
+          overflow: auto;
+        }
+
+        #sbd-html-previewer .preview-content {
+          min-height: 100%;
+          background-color: white;
+          color: black;
+          padding: 1rem;
+          border-radius: 0.25rem;
+          overflow: auto;
+        }
+
+        #sbd-html-previewer .btn-purple {
+          background-color: #9A4B8C;
+          color: white;
+          padding: 0.5rem 1.5rem;
+          border-radius: 0.375rem;
+          font-weight: 500;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          border: none;
+          font-family: inherit;
+          font-size: 1rem;
+        }
+
+        #sbd-html-previewer .btn-purple:hover {
+          background-color: #8A407C;
+        }
+
+        #sbd-html-previewer .input-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 1rem;
+        }
+
+        #sbd-html-previewer .error-message {
+          margin-top: 0.75rem;
+          color: #f87171;
+          font-weight: 500;
+          display: none;
+          font-family: inherit;
+        }
+
+        /* Fix for WordPress themes that might interfere */
+        #sbd-html-previewer button {
+          box-shadow: none !important;
+          text-transform: none !important;
+        }
+
+        #sbd-html-previewer textarea:focus {
+          outline: none !important;
+          box-shadow: 0 0 0 2px rgba(154, 75, 140, 0.5) !important;
+        }
+      </style>
+
+      <div class="title-bar"></div>
+      <h1 class="preview-title">HTML Code Previewer</h1>
+      <p class="preview-description">Real-time HTML validation and preview tool. Check your code, visualize your design, and save your work with ease.</p>
+
+      <div class="grid-container">
+        <!-- Code Input Section -->
+        <div>
+          <div class="input-header">
+            <h2>HTML Code</h2>
+            <button id="sbd-save-btn" class="btn-purple">Open in New Tab</button>
+          </div>
+          <textarea id="sbd-html-code" class="code-textarea" spellcheck="false" placeholder="Enter your HTML code here..."></textarea>
+          <div id="sbd-error-display" class="error-message"></div>
+        </div>
+
+        <!-- Preview Section -->
+        <div>
+          <h2>Preview</h2>
+          <div id="sbd-preview-container" class="preview-container">
+            <div id="sbd-preview" class="preview-content"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Ensuring the script runs after the sbd-html-previewer div is in the DOM.
+      // If the script tag is already at the end of the div, DOMContentLoaded might be redundant
+      // but it's a good safety measure if this script were to be moved to <head>.
+      document.addEventListener('DOMContentLoaded', function() {
+        // Check if the previewer div itself exists. If not, the script shouldn't run.
+        const previewerRoot = document.getElementById('sbd-html-previewer');
+        if (!previewerRoot) {
+            console.error('HTML Code Previewer: Root element #sbd-html-previewer not found.');
+            return;
+        }
+
+        const htmlCodeInput = document.getElementById('sbd-html-code');
+        const previewElement = document.getElementById('sbd-preview');
+        const errorDisplay = document.getElementById('sbd-error-display');
+        const saveButton = document.getElementById('sbd-save-btn');
+
+        if (!htmlCodeInput || !previewElement || !errorDisplay || !saveButton) {
+          console.error('HTML Code Previewer: One or more required child elements not found within #sbd-html-previewer.');
+          // Attempt to log which specific elements are missing
+          if (!htmlCodeInput) console.error('Missing: #sbd-html-code');
+          if (!previewElement) console.error('Missing: #sbd-preview');
+          if (!errorDisplay) console.error('Missing: #sbd-error-display');
+          if (!saveButton) console.error('Missing: #sbd-save-btn');
+          return;
+        }
+
+        let debounceTimeout;
+        function updatePreviewWithDebounce() {
+          clearTimeout(debounceTimeout);
+          debounceTimeout = setTimeout(updatePreview, 300);
+        }
+
+        function updatePreview() {
+          const htmlCode = htmlCodeInput.value;
+          errorDisplay.style.display = 'none';
+          errorDisplay.textContent = ''; // Clear previous errors
+
+          try {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(htmlCode, 'text/html');
+
+            const parserErrors = doc.querySelector('parsererror');
+            if (parserErrors) {
+              // Attempt to get a more specific error message from the parsererror element
+              let specificError = "HTML syntax error.";
+              if (parserErrors.textContent && parserErrors.textContent.trim() !== "") {
+                // Extract a snippet of the error, can be verbose
+                specificError = parserErrors.textContent.split('\n')[0] || "HTML syntax error.";
+              }
+              throw new Error(specificError);
+            }
+
+            previewElement.innerHTML = htmlCode;
+          } catch (error) {
+            errorDisplay.textContent = error.message || 'HTML syntax error detected. Please check your code.';
+            errorDisplay.style.display = 'block';
+          }
+        }
+
+        function openInNewTab() {
+          const htmlCode = htmlCodeInput.value;
+          let fullHtml = htmlCode;
+
+          // Check if the code is a full HTML document or just a snippet
+          const isFullHtmlDoc = htmlCode.trim().toLowerCase().startsWith('<!doctype html>') ||
+                                htmlCode.trim().toLowerCase().startsWith('<html>');
+
+          if (!isFullHtmlDoc) {
+            fullHtml = `<!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>HTML Preview</title>
+      <style> body { margin: 20px; font-family: sans-serif; } </style>
+    </head>
+    <body>
+    ${htmlCode}
+    </body>
+    </html>`;
+          }
+
+          const blob = new Blob([fullHtml], { type: 'text/html' });
+          const url = URL.createObjectURL(blob);
+
+          const newTab = window.open(url, '_blank');
+          if (newTab) {
+            newTab.focus(); // Try to focus the new tab
+          } else {
+            alert("Please allow pop-ups for this site to open the preview in a new tab.");
+          }
+
+          setTimeout(() => URL.revokeObjectURL(url), 1000); // Clean up
+        }
+
+        htmlCodeInput.addEventListener('input', updatePreviewWithDebounce);
+        saveButton.addEventListener('click', openInNewTab);
+
+        // Initial preview for any default content (if any)
+        updatePreview();
+      });
+    </script>
+
+</body>
+</html>

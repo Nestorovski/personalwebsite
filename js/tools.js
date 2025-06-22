@@ -20,11 +20,18 @@ let tools = [
         description: "Real-time hand tracking with joint angle calculation and IK command output for robotics control.",
         link: "./tools/hand-ik-controller.html",
         icon: "fas fa-robot"
+    },
+    {
+        id: 4,
+        title: "HTML Code Previewer",
+        description: "Real-time HTML validation and preview tool. Check your code, visualize your design, and open in a new tab.",
+        link: "./tools/html-previewer-tool.html",
+        icon: "fas fa-code"
     }
 ];
 
 // Initialize window.allTools with the initial set of tools
-window.allTools = [...tools]; // This will now include the Hand IK Controller
+window.allTools = [...tools]; // This will now include the Hand IK Controller and HTML Previewer
 
 // Function to render tool cards (this one will be effectively overridden by the one at the bottom, but good to keep consistent)
 function renderTools() {
