@@ -33,6 +33,12 @@
         .hero-gradient {
             background: linear-gradient(135deg, #5D5CDE 0%, #7C7CE8 100%);
         }
+        /* Ensure the grid displays columns */
+        #tools-grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem; /* 24px */
+        }
     </style>
 </head>
 <body class="bg-white dark:bg-dark-bg transition-colors duration-300">
@@ -68,7 +74,7 @@
                 <button onclick="scrollToTools()" class="px-8 py-3 bg-white text-primary font-semibold rounded-lg hover:bg-gray-100 transition-colors">
                     Browse Tools
                 </button>
-                <button onclick="showAddTool()" class="px-8 py-3 border-2 border-white text-white font-semibold rounded-lg hover:bg-white hover:text-primary transition-colors">
+                <button onclick="addNewTool()" class="px-8 py-3 border-2 border-white text-white font-semibold rounded-lg hover:bg-white hover:text-primary transition-colors">
                     Add New Tool
                 </button>
             </div>
@@ -96,13 +102,17 @@
                 </div>
             </div>
 
+            <!-- Tools will be rendered here by JavaScript -->
+            <div id="tools-grid-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Tool cards will be injected here -->
+            </div>
             
             <!-- Add Tool Button (when no tools) -->
             <div id="empty-state" class="hidden text-center py-12">
                 <i class="fas fa-tools text-6xl text-gray-300 dark:text-gray-600 mb-4"></i>
                 <h3 class="text-xl font-semibold text-gray-600 dark:text-gray-300 mb-2">No tools yet</h3>
                 <p class="text-gray-500 dark:text-gray-400 mb-6">Start building your collection of useful tools</p>
-                <button onclick="showAddTool()" class="px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors">
+                <button onclick="addNewTool()" class="px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors">
                     Add Your First Tool
                 </button>
             </div>
@@ -146,22 +156,8 @@
             document.documentElement.classList.toggle('dark');
         });
 
-        // Search functionality
-        document.getElementById('search-tools').addEventListener('input', (e) => {
-            const searchTerm = e.target.value.toLowerCase();
-            const toolCards = document.querySelectorAll('.tool-card');
-            
-            toolCards.forEach(card => {
-                const title = card.querySelector('h3').textContent.toLowerCase();
-                const description = card.querySelector('p').textContent.toLowerCase();
-                
-                if (title.includes(searchTerm) || description.includes(searchTerm)) {
-                    card.style.display = 'block';
-                } else {
-                    card.style.display = 'none';
-                }
-            });
-        });
+        // Search functionality is now handled in js/tools.js
+        // document.getElementById('search-tools').addEventListener('input', (e) => { ... });
 
         // Smooth scroll to tools
         function scrollToTools() {
@@ -170,15 +166,15 @@
             });
         }
 
-        // Show add tool instructions
-        function showAddTool() {
-            alert('To add a new tool:\n\n1. Create an HTML file with your app\n2. Upload it to your GitHub repository\n3. Add a new tool card to this dashboard\n4. Link the "Open Tool" button to your app URL');
-        }
+        // The old showAddTool function is removed as addNewTool is now in js/tools.js
+        // function showAddTool() { ... }
 
         // Initialize on page load
         document.addEventListener('DOMContentLoaded', () => {
             initTheme();
+            renderTools(); // Render tools from js/tools.js
         });
     </script>
+    <script src="js/tools.js"></script>
 </body>
 </html>
