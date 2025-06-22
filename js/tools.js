@@ -1,20 +1,6 @@
 // Sample initial tool data
 let tools = [
     {
-        id: 1,
-        title: "Sample Tool 1",
-        description: "This is a description for sample tool 1.",
-        link: "javascript:void(0);", // Placeholder link
-        icon: "fas fa-cogs" // Example Font Awesome icon
-    },
-    {
-        id: 2,
-        title: "Another Tool",
-        description: "A brief overview of what this other tool does.",
-        link: "javascript:void(0);", // Placeholder link
-        icon: "fas fa-wrench"
-    },
-    {
         id: 3,
         title: "Hand IK Controller",
         description: "Real-time hand tracking with joint angle calculation and IK command output for robotics control.",
