@@ -1,14 +1,14 @@
 // Sample initial tool data
 let tools = [
     {
-        id: 3,
+        id: 1,
         title: "Hand IK Controller",
         description: "Real-time hand tracking with joint angle calculation and IK command output for robotics control.",
         link: "./tools/hand-ik-controller.html",
         icon: "fas fa-robot"
     },
     {
-        id: 4,
+        id: 2,
         title: "HTML Code Previewer",
         description: "Real-time HTML validation and preview tool. Check your code, visualize your design, and open in a new tab.",
         link: "./tools/html-previewer-tool.html",
