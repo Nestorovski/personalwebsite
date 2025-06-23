@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hand IK Controller</title>
+    <title>Advanced Hand IK Controller</title>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"></script>
@@ -11,129 +11,391 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         .terminal {
-            font-family: 'Courier New', monospace;
-            background: #000;
-            color: #00ff00;
+            font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+            color: #00ff41;
             padding: 1rem;
-            border-radius: 8px;
-            height: 300px;
+            border-radius: 12px;
+            height: 400px;
             overflow-y: auto;
             white-space: pre-wrap;
             word-break: break-all;
+            border: 1px solid #333;
+            position: relative;
         }
+        
         .terminal::-webkit-scrollbar {
             width: 8px;
         }
+        
         .terminal::-webkit-scrollbar-track {
-            background: #333;
-        }
-        .terminal::-webkit-scrollbar-thumb {
-            background: #00ff00;
+            background: #222;
             border-radius: 4px;
         }
-        .dark .terminal {
-            background: #1a1a1a;
+        
+        .terminal::-webkit-scrollbar-thumb {
+            background: linear-gradient(45deg, #00ff41, #00cc33);
+            border-radius: 4px;
         }
-        /* Canvas is flipped in the JS logic by drawing the mirrored image, so no CSS transform needed here if that's the case */
-        /* canvas { transform: scaleX(-1); } */
+        
+        .terminal::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #00ff41, #00cc33, #00ff41);
+            border-radius: 12px 12px 0 0;
+        }
+        
+        .dark .terminal {
+            background: linear-gradient(135deg, #0f0f0f 0%, #1f1f1f 100%);
+        }
+        
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
+            animation: pulse 2s infinite;
+        }
+        
+        .status-connected {
+            background: #10b981;
+            box-shadow: 0 0 8px rgba(16, 185, 129, 0.6);
+        }
+        
+        .status-disconnected {
+            background: #ef4444;
+            box-shadow: 0 0 8px rgba(239, 68, 68, 0.6);
+        }
+        
+        .status-processing {
+            background: #f59e0b;
+            box-shadow: 0 0 8px rgba(245, 158, 11, 0.6);
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+        }
+        
+        .dark .glass-card {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .confidence-bar {
+            height: 4px;
+            background: linear-gradient(90deg, #ef4444 0%, #f59e0b 50%, #10b981 100%);
+            border-radius: 2px;
+            transition: all 0.3s ease;
+        }
+        
+        .loading-spinner {
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #5D5CDE;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            margin-right: 8px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #5D5CDE 0%, #4F46E5 100%);
+            border: none;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #4F46E5 0%, #4338CA 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(93, 92, 222, 0.4);
+        }
+        
+        input[type="number"], input[type="range"] {
+            font-size: 16px;
+        }
+        
+        .visualization-overlay {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-family: monospace;
+        }
     </style>
 </head>
-<body class="bg-white dark:bg-gray-900 text-gray-900 dark:text-white min-h-screen">
-    <div class="container mx-auto p-4 max-w-6xl">
-        <h1 class="text-3xl font-bold mb-6 text-center">Hand IK Controller</h1>
+<body class="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 text-gray-900 dark:text-white min-h-screen">
+    <div class="container mx-auto p-4 max-w-7xl">
+        <header class="text-center mb-8">
+            <h1 class="text-4xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent mb-2">
+                Advanced Hand IK Controller
+            </h1>
+            <p class="text-gray-600 dark:text-gray-400">Real-time hand tracking with inverse kinematics command generation</p>
+        </header>
 
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <!-- Video and Controls -->
-            <div class="space-y-4">
-                <div class="bg-gray-100 dark:bg-gray-800 rounded-lg p-4">
-                    <h2 class="text-xl font-semibold mb-4">Camera Feed</h2>
-                    <div class="relative">
-                        <video id="input_video" class="w-full rounded-lg hidden" style="transform: scaleX(-1);"></video>
-                        <canvas id="output_canvas" class="w-full rounded-lg border-2 border-gray-300 dark:border-gray-600"></canvas>
+        <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+            <!-- Camera and Visualization Section -->
+            <div class="xl:col-span-2 space-y-6">
+                <!-- Camera Feed -->
+                <div class="glass-card p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-xl font-semibold flex items-center">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                            </svg>
+                            Camera Feed
+                        </h2>
+                        <div id="processingStatus" class="text-sm text-gray-500 hidden">
+                            <div class="loading-spinner"></div>Processing...
+                        </div>
                     </div>
+                    
+                    <div class="relative bg-black rounded-lg overflow-hidden">
+                        <video id="input_video" class="w-full rounded-lg hidden" style="transform: scaleX(-1);"></video>
+                        <canvas id="output_canvas" class="w-full rounded-lg border-2 border-gray-300 dark:border-gray-600 min-h-[300px]"></canvas>
+                        <div id="visualizationOverlay" class="visualization-overlay hidden">
+                            FPS: <span id="fpsCounter">0</span> | 
+                            Confidence: <span id="confidenceValue">0%</span>
+                        </div>
+                        <div id="loadingOverlay" class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+                            <div class="text-white text-center">
+                                <div class="loading-spinner mx-auto mb-2" style="width: 40px; height: 40px;"></div>
+                                <p>Camera initializing...</p>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="mt-4 flex flex-wrap gap-2">
-                        <button id="startBtn" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg">
+                        <button id="startBtn" class="btn-primary text-white px-6 py-2 rounded-lg font-medium">
+                            <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h8m-1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
                             Start Camera
                         </button>
-                        <button id="stopBtn" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg" disabled>
+                        <button id="stopBtn" class="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-lg font-medium" disabled>
+                            <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 9l6 6m0-6l-6 6"></path>
+                            </svg>
                             Stop Camera
                         </button>
-                        <button id="clearTerminal" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg">
+                        <button id="exportBtn" class="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-lg font-medium">
+                            <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                            Export Log
+                        </button>
+                        <button id="clearTerminal" class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-lg font-medium">
+                            <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                            </svg>
                             Clear Terminal
                         </button>
                     </div>
                 </div>
 
-                <!-- Configuration -->
-                <div class="bg-gray-100 dark:bg-gray-800 rounded-lg p-4">
-                    <h3 class="text-lg font-semibold mb-3">Configuration</h3>
-                    <div class="grid grid-cols-2 gap-4">
+                <!-- Advanced Configuration -->
+                <div class="glass-card p-6">
+                    <h3 class="text-lg font-semibold mb-4 flex items-center">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        </svg>
+                        Configuration
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         <div>
-                            <label for="updateRate" class="block text-sm font-medium mb-1">Update Rate (ms)</label>
-                            <input type="number" id="updateRate" value="100" min="50" max="1000"
-                                   class="w-full p-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600">
+                            <label for="updateRate" class="block text-sm font-medium mb-2">Update Rate</label>
+                            <input type="range" id="updateRate" min="50" max="1000" value="100" 
+                                   class="w-full mb-1">
+                            <div class="text-xs text-gray-500"><span id="updateRateValue">100</span>ms</div>
                         </div>
                         <div>
-                            <label for="angleThreshold" class="block text-sm font-medium mb-1">Angle Threshold (°)</label>
-                            <input type="number" id="angleThreshold" value="5" min="1" max="30"
-                                   class="w-full p-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600">
+                            <label for="angleThreshold" class="block text-sm font-medium mb-2">Angle Threshold</label>
+                            <input type="range" id="angleThreshold" min="1" max="30" value="5"
+                                   class="w-full mb-1">
+                            <div class="text-xs text-gray-500"><span id="angleThresholdValue">5</span>°</div>
+                        </div>
+                        <div>
+                            <label for="confidenceThreshold" class="block text-sm font-medium mb-2">Min Confidence</label>
+                            <input type="range" id="confidenceThreshold" min="0.1" max="1.0" value="0.6" step="0.1"
+                                   class="w-full mb-1">
+                            <div class="text-xs text-gray-500"><span id="confidenceThresholdValue">0.6</span></div>
                         </div>
                     </div>
-                    <div class="mt-3">
+                    
+                    <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
                         <label class="flex items-center">
                             <input type="checkbox" id="enableIK" checked
-                                   class="mr-2 w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                   class="mr-2 w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500">
                             <span>Enable IK Commands</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" id="showVisualization" checked
+                                   class="mr-2 w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500">
+                            <span>Show Visualization Overlay</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" id="autoScroll" checked
+                                   class="mr-2 w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500">
+                            <span>Auto-scroll Terminal</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" id="timestampFormat" 
+                                   class="mr-2 w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500">
+                            <span>Detailed Timestamps</span>
                         </label>
                     </div>
                 </div>
             </div>
 
-            <!-- Terminal Output -->
-            <div class="space-y-4">
-                <div class="bg-gray-100 dark:bg-gray-800 rounded-lg p-4">
-                    <h2 class="text-xl font-semibold mb-4">Terminal Output</h2>
+            <!-- Terminal and Status Section -->
+            <div class="space-y-6">
+                <!-- Terminal Output -->
+                <div class="glass-card p-6">
+                    <h2 class="text-xl font-semibold mb-4 flex items-center">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                        </svg>
+                        Terminal Output
+                    </h2>
                     <div id="terminal" class="terminal"></div>
                 </div>
 
-                <!-- Status -->
-                <div class="bg-gray-100 dark:bg-gray-800 rounded-lg p-4">
-                    <h3 class="text-lg font-semibold mb-3">Status</h3>
+                <!-- Enhanced Status -->
+                <div class="glass-card p-6">
+                    <h3 class="text-lg font-semibold mb-4 flex items-center">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 00-2 2h2a2 2 0 002-2z"></path>
+                        </svg>
+                        System Status
+                    </h3>
+                    <div class="space-y-3 text-sm">
+                        <div class="flex items-center justify-between">
+                            <span>Camera Status:</span>
+                            <span id="cameraStatus" class="flex items-center">
+                                <span class="status-indicator status-disconnected"></span>
+                                Disconnected
+                            </span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span>Hands Detected:</span>
+                            <span id="handsCount" class="font-mono font-bold">0</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span>Processing FPS:</span>
+                            <span id="processingFPS" class="font-mono">0</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span>Last Update:</span>
+                            <span id="lastUpdate" class="font-mono text-xs">Never</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span>Commands Sent:</span>
+                            <span id="commandCount" class="font-mono font-bold">0</span>
+                        </div>
+                        <div>
+                            <div class="flex items-center justify-between mb-1">
+                                <span>Average Confidence:</span>
+                                <span id="avgConfidence" class="font-mono">0%</span>
+                            </div>
+                            <div class="confidence-bar">
+                                <div id="confidenceBar" class="h-full bg-gradient-to-r from-red-500 to-green-500 rounded-full" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Performance Metrics -->
+                <div class="glass-card p-6">
+                    <h3 class="text-lg font-semibold mb-4">Performance</h3>
                     <div class="space-y-2 text-sm">
-                        <div>Camera: <span id="cameraStatus" class="font-mono text-red-500">Disconnected</span></div>
-                        <div>Hands Detected: <span id="handsCount" class="font-mono">0</span></div>
-                        <div>Last Update: <span id="lastUpdate" class="font-mono">Never</span></div>
+                        <div class="flex justify-between">
+                            <span>Session Duration:</span>
+                            <span id="sessionDuration" class="font-mono">00:00:00</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Frames Processed:</span>
+                            <span id="framesProcessed" class="font-mono">0</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Avg Processing Time:</span>
+                            <span id="avgProcessingTime" class="font-mono">0ms</span>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- Help Section -->
-        <div class="mt-8 bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
-            <h3 class="text-lg font-semibold mb-2">How to Use</h3>
-            <ul class="list-disc list-inside space-y-1 text-sm">
-                <li>Click "Start Camera" to begin hand tracking. Allow camera permissions if prompted.</li>
-                <li>Position your hand in front of the camera.</li>
-                <li>The terminal will output joint angles and IK commands based on your hand movements.</li>
-                <li>Commands format: <code class="bg-gray-200 dark:bg-gray-700 px-1 rounded">JOINT_NAME angle_value</code></li>
-                <li>Adjust "Update Rate" and "Angle Threshold" to control sensitivity and output frequency.</li>
-                <li>Toggle "Enable IK Commands" to turn on/off the generation of robot-specific commands.</li>
-                <li>Use these commands in your robotics control system.</li>
-            </ul>
+        <div class="mt-8 glass-card p-6">
+            <h3 class="text-lg font-semibold mb-4 flex items-center">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                Getting Started
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <h4 class="font-medium mb-2">Quick Start:</h4>
+                    <ol class="list-decimal list-inside space-y-1 text-sm text-gray-600 dark:text-gray-400">
+                        <li>Click "Start Camera" and allow camera permissions</li>
+                        <li>Position your hand clearly in the camera view</li>
+                        <li>Watch real-time joint angles in the terminal</li>
+                        <li>Adjust threshold settings for optimal tracking</li>
+                        <li>Export terminal output for use in robotics systems</li>
+                    </ol>
+                </div>
+                <div>
+                    <h4 class="font-medium mb-2">Advanced Features:</h4>
+                    <ul class="list-disc list-inside space-y-1 text-sm text-gray-600 dark:text-gray-400">
+                        <li>Real-time confidence scoring and performance metrics</li>
+                        <li>Configurable update rates and angle thresholds</li>
+                        <li>Export functionality for command logs</li>
+                        <li>Multi-hand tracking with individual identification</li>
+                        <li>Responsive design optimized for all devices</li>
+                    </ul>
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
-        // Dark mode support based on OS preference
-        if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        // Enhanced dark mode support
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
             document.documentElement.classList.add('dark');
-        } else {
-            document.documentElement.classList.remove('dark');
         }
-        // Optional: Add a button to toggle dark mode manually and save preference
-        // window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => { ... }); // This is fine for OS sync
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+            if (event.matches) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        });
 
-        class HandIKController {
+        class AdvancedHandIKController {
             constructor() {
                 this.video = document.getElementById('input_video');
                 this.canvas = document.getElementById('output_canvas');
@@ -143,10 +405,24 @@
                 this.hands = null;
                 this.camera = null;
                 this.isRunning = false;
-                this.lastAngles = {}; // Stores last angles per hand and joint
+                this.lastAngles = {};
                 this.lastUpdateTime = null;
+                this.startTime = null;
+                this.commandCount = 0;
+                this.framesProcessed = 0;
+                this.processingTimes = [];
+                this.fpsCounter = 0;
+                this.lastFpsTime = Date.now();
+                
+                // Performance tracking
+                this.performanceMetrics = {
+                    sessionStart: null,
+                    framesProcessed: 0,
+                    totalProcessingTime: 0,
+                    confidenceSum: 0,
+                    confidenceCount: 0
+                };
 
-                // Landmark names for clarity (from MediaPipe Hands documentation)
                 this.LANDMARK_NAMES = [
                     'WRIST', 'THUMB_CMC', 'THUMB_MCP', 'THUMB_IP', 'THUMB_TIP',
                     'INDEX_FINGER_MCP', 'INDEX_FINGER_PIP', 'INDEX_FINGER_DIP', 'INDEX_FINGER_TIP',
@@ -157,8 +433,11 @@
 
                 this.initializeMediaPipe();
                 this.setupEventListeners();
+                this.setupConfigurationListeners();
                 this.updateStatus();
-                this.printToTerminal('SYSTEM: Hand IK Controller initialized. Click "Start Camera".');
+                this.startPerformanceTracking();
+                this.printToTerminal('SYSTEM: Advanced Hand IK Controller initialized', 'success');
+                this.printToTerminal('SYSTEM: Ready to start camera tracking', 'info');
             }
 
             initializeMediaPipe() {
@@ -168,9 +447,9 @@
 
                 this.hands.setOptions({
                     maxNumHands: 2,
-                    modelComplexity: 1, // 0 for lite, 1 for full
-                    minDetectionConfidence: 0.6, // Increased slightly
-                    minTrackingConfidence: 0.6  // Increased slightly
+                    modelComplexity: 1,
+                    minDetectionConfidence: 0.7,
+                    minTrackingConfidence: 0.7
                 });
 
                 this.hands.onResults(this.onResults.bind(this));
@@ -180,45 +459,84 @@
                 document.getElementById('startBtn').addEventListener('click', () => this.startCamera());
                 document.getElementById('stopBtn').addEventListener('click', () => this.stopCamera());
                 document.getElementById('clearTerminal').addEventListener('click', () => this.clearTerminal());
+                document.getElementById('exportBtn').addEventListener('click', () => this.exportTerminalLog());
+            }
+
+            setupConfigurationListeners() {
+                // Update rate slider
+                const updateRateSlider = document.getElementById('updateRate');
+                const updateRateValue = document.getElementById('updateRateValue');
+                updateRateSlider.addEventListener('input', (e) => {
+                    updateRateValue.textContent = e.target.value;
+                });
+
+                // Angle threshold slider
+                const angleThresholdSlider = document.getElementById('angleThreshold');
+                const angleThresholdValue = document.getElementById('angleThresholdValue');
+                angleThresholdSlider.addEventListener('input', (e) => {
+                    angleThresholdValue.textContent = e.target.value;
+                });
+
+                // Confidence threshold slider
+                const confidenceThresholdSlider = document.getElementById('confidenceThreshold');
+                const confidenceThresholdValue = document.getElementById('confidenceThresholdValue');
+                confidenceThresholdSlider.addEventListener('input', (e) => {
+                    confidenceThresholdValue.textContent = e.target.value;
+                    this.hands.setOptions({
+                        minDetectionConfidence: parseFloat(e.target.value),
+                        minTrackingConfidence: parseFloat(e.target.value)
+                    });
+                });
+
+                // Visualization overlay toggle
+                document.getElementById('showVisualization').addEventListener('change', (e) => {
+                    const overlay = document.getElementById('visualizationOverlay');
+                    if (e.target.checked) {
+                        overlay.classList.remove('hidden');
+                    } else {
+                        overlay.classList.add('hidden');
+                    }
+                });
             }
 
             async startCamera() {
                 if (this.isRunning) return;
-                this.printToTerminal('SYSTEM: Starting camera...');
+                
+                this.printToTerminal('SYSTEM: Initializing camera...', 'info');
+                this.showProcessingStatus(true);
+                
                 try {
                     this.camera = new Camera(this.video, {
                         onFrame: async () => {
-                            if (this.video.readyState >= 3) { // HAVE_FUTURE_DATA or more
+                            if (this.video.readyState >= 3) {
+                                const startTime = performance.now();
                                 await this.hands.send({image: this.video});
+                                const endTime = performance.now();
+                                this.updatePerformanceMetrics(endTime - startTime);
                             }
                         },
-                        width: 640, // Desired width
-                        height: 480 // Desired height
+                        width: 640,
+                        height: 480
                     });
 
                     await this.camera.start();
                     this.isRunning = true;
+                    this.startTime = Date.now();
+                    this.performanceMetrics.sessionStart = Date.now();
 
-                    // Make video visible to see what mediapipe sees (optional, can be hidden)
-                    // this.video.classList.remove('hidden');
-
+                    document.getElementById('loadingOverlay').classList.add('hidden');
                     document.getElementById('startBtn').disabled = true;
                     document.getElementById('stopBtn').disabled = false;
-                    document.getElementById('cameraStatus').textContent = 'Connected';
-                    document.getElementById('cameraStatus').className = 'font-mono text-green-500';
+                    
+                    this.updateCameraStatus('connected');
+                    this.showProcessingStatus(false);
 
-                    this.printToTerminal('SYSTEM: Camera started successfully.');
-                    this.printToTerminal('SYSTEM: Hand tracking active.');
+                    this.printToTerminal('SYSTEM: Camera started successfully', 'success');
+                    this.printToTerminal('SYSTEM: Hand tracking is now active', 'success');
 
                 } catch (error) {
-                    this.printToTerminal(`ERROR: Failed to start camera: ${error.message}`);
-                    if (error.name === "NotFoundError" || error.name === "DevicesNotFoundError") {
-                         this.printToTerminal("ERROR: No camera found. Please ensure a camera is connected and enabled.");
-                    } else if (error.name === "NotAllowedError" || error.name === "PermissionDeniedError") {
-                         this.printToTerminal("ERROR: Camera access denied. Please allow camera permissions in your browser.");
-                    }
-                    console.error('Camera error:', error);
-                    // Re-enable start button if failed
+                    this.handleCameraError(error);
+                    this.showProcessingStatus(false);
                     document.getElementById('startBtn').disabled = false;
                 }
             }
@@ -226,26 +544,46 @@
             stopCamera() {
                 if (!this.isRunning || !this.camera) return;
 
-                this.camera.stop(); // This will also stop the onFrame loop
+                this.camera.stop();
                 this.camera = null;
                 this.isRunning = false;
 
-                // this.video.classList.add('hidden');
-                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height); // Clear canvas
+                document.getElementById('loadingOverlay').classList.remove('hidden');
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
                 document.getElementById('startBtn').disabled = false;
                 document.getElementById('stopBtn').disabled = true;
-                document.getElementById('cameraStatus').textContent = 'Disconnected';
-                document.getElementById('cameraStatus').className = 'font-mono text-red-500';
+                
+                this.updateCameraStatus('disconnected');
                 document.getElementById('handsCount').textContent = '0';
 
-                this.printToTerminal('SYSTEM: Camera stopped.');
+                this.printToTerminal('SYSTEM: Camera stopped', 'warning');
+                this.printToTerminal('SYSTEM: Session ended', 'info');
+            }
+
+            handleCameraError(error) {
+                let errorMessage = 'Unknown camera error';
+                
+                if (error.name === "NotFoundError" || error.name === "DevicesNotFoundError") {
+                    errorMessage = "No camera found. Please connect a camera and try again.";
+                } else if (error.name === "NotAllowedError" || error.name === "PermissionDeniedError") {
+                    errorMessage = "Camera access denied. Please allow camera permissions.";
+                } else if (error.name === "NotReadableError") {
+                    errorMessage = "Camera is in use by another application.";
+                } else {
+                    errorMessage = error.message;
+                }
+
+                this.printToTerminal(`ERROR: ${errorMessage}`, 'error');
+                console.error('Camera error:', error);
             }
 
             onResults(results) {
                 if (!this.isRunning) return;
 
-                // Set canvas dimensions once based on video, then scale drawing
+                const frameStartTime = performance.now();
+
+                // Update canvas dimensions
                 if (this.canvas.width !== this.video.videoWidth || this.canvas.height !== this.video.videoHeight) {
                     this.canvas.width = this.video.videoWidth;
                     this.canvas.height = this.video.videoHeight;
@@ -254,61 +592,138 @@
                 this.ctx.save();
                 this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-                // Draw the camera image mirrored (as the video element itself is not mirrored by default)
+                // Draw mirrored camera feed (like a mirror) with landmarks matching
                 this.ctx.translate(this.canvas.width, 0);
                 this.ctx.scale(-1, 1);
                 this.ctx.drawImage(results.image, 0, 0, this.canvas.width, this.canvas.height);
-                this.ctx.restore(); // Restore context for drawing landmarks correctly (not mirrored)
 
-                document.getElementById('handsCount').textContent = results.multiHandLandmarks ? results.multiHandLandmarks.length : 0;
+                const handsCount = results.multiHandLandmarks ? results.multiHandLandmarks.length : 0;
+                document.getElementById('handsCount').textContent = handsCount;
+
+                let totalConfidence = 0;
+                let confidenceCount = 0;
 
                 if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
+                    this.updateCameraStatus('processing');
+                    
                     for (let i = 0; i < results.multiHandLandmarks.length; i++) {
                         const landmarks = results.multiHandLandmarks[i];
-                        // Handedness is an array, get the first result's label
-                        const handedness = results.multiHandedness[i] ? results.multiHandedness[i].label : 'Unknown';
+                        const originalHandedness = results.multiHandedness[i] ? results.multiHandedness[i].label : 'Unknown';
+                        
+                        // Flip handedness for mirrored display: Left becomes Right, Right becomes Left
+                        const handedness = originalHandedness === 'Left' ? 'Right' : 
+                                         originalHandedness === 'Right' ? 'Left' : 'Unknown';
+                        
+                        // Calculate confidence
+                        if (results.multiHandedness[i] && results.multiHandedness[i].score) {
+                            totalConfidence += results.multiHandedness[i].score;
+                            confidenceCount++;
+                        }
 
-                        this.drawLandmarks(landmarks); // Landmarks are drawn on non-mirrored canvas space
+                        // Draw landmarks in the same mirrored context as the camera
+                        this.drawEnhancedLandmarks(landmarks, handedness);
                         this.calculateAndOutputAngles(landmarks, handedness, i);
                     }
+                } else {
+                    this.updateCameraStatus('connected');
                 }
+
+                // Restore context after drawing both camera and landmarks
+                this.ctx.restore();
+
+                // Update confidence metrics
+                if (confidenceCount > 0) {
+                    const avgConfidence = totalConfidence / confidenceCount;
+                    this.updateConfidenceDisplay(avgConfidence);
+                    this.performanceMetrics.confidenceSum += avgConfidence;
+                    this.performanceMetrics.confidenceCount++;
+                }
+
+                this.updateFPS();
                 this.updateStatus();
+                
+                const frameEndTime = performance.now();
+                this.performanceMetrics.totalProcessingTime += (frameEndTime - frameStartTime);
+                this.performanceMetrics.framesProcessed++;
             }
 
-            drawLandmarks(landmarks) {
-                // Draw connections (MediaPipe's HAND_CONNECTIONS can be used if drawing_utils is loaded)
-                // For now, using the custom connections array.
+            drawEnhancedLandmarks(landmarks, handedness) {
                 const connections = [
-                    [0, 1], [1, 2], [2, 3], [3, 4], // Thumb (THUMB_CMC to THUMB_TIP)
-                    [0, 5], [5, 6], [6, 7], [7, 8], // Index (WRIST to INDEX_FINGER_TIP)
+                    [0, 1], [1, 2], [2, 3], [3, 4], // Thumb
+                    [0, 5], [5, 6], [6, 7], [7, 8], // Index
                     [0, 9], [9, 10], [10, 11], [11, 12], // Middle
                     [0, 13], [13, 14], [14, 15], [15, 16], // Ring
                     [0, 17], [17, 18], [18, 19], [19, 20], // Pinky
-                    [5, 9], [9, 13], [13, 17] // Palm connections
+                    [5, 9], [9, 13], [13, 17] // Palm
                 ];
 
-                this.ctx.strokeStyle = 'rgba(0, 255, 0, 0.8)'; // Green lines
+                // Enhanced connection drawing with gradient
+                const gradient = this.ctx.createLinearGradient(0, 0, this.canvas.width, 0);
+                gradient.addColorStop(0, '#00ff41');
+                gradient.addColorStop(0.5, '#00cc33');
+                gradient.addColorStop(1, '#00aa22');
+
+                this.ctx.strokeStyle = gradient;
                 this.ctx.lineWidth = 3;
+                this.ctx.lineCap = 'round';
+                this.ctx.lineJoin = 'round';
+
                 this.ctx.beginPath();
                 for (const connection of connections) {
                     const startLandmark = landmarks[connection[0]];
                     const endLandmark = landmarks[connection[1]];
                     if (startLandmark && endLandmark) {
-                         // Scale landmarks to canvas dimensions
                         this.ctx.moveTo(startLandmark.x * this.canvas.width, startLandmark.y * this.canvas.height);
                         this.ctx.lineTo(endLandmark.x * this.canvas.width, endLandmark.y * this.canvas.height);
                     }
                 }
                 this.ctx.stroke();
 
-                this.ctx.fillStyle = 'rgba(255, 0, 0, 0.8)'; // Red dots
+                // Enhanced landmark points with different colors for different finger parts
+                const colors = {
+                    0: '#ff4444', // Wrist - red
+                    1: '#ff8844', 2: '#ff8844', 3: '#ff8844', 4: '#ff8844', // Thumb - orange
+                    5: '#44ff44', 6: '#44ff44', 7: '#44ff44', 8: '#44ff44', // Index - green
+                    9: '#4444ff', 10: '#4444ff', 11: '#4444ff', 12: '#4444ff', // Middle - blue
+                    13: '#ff44ff', 14: '#ff44ff', 15: '#ff44ff', 16: '#ff44ff', // Ring - magenta
+                    17: '#ffff44', 18: '#ffff44', 19: '#ffff44', 20: '#ffff44' // Pinky - yellow
+                };
+
                 for (let j = 0; j < landmarks.length; j++) {
                     const landmark = landmarks[j];
                     if (landmark) {
+                        this.ctx.fillStyle = colors[j] || '#ffffff';
                         this.ctx.beginPath();
-                        this.ctx.arc(landmark.x * this.canvas.width, landmark.y * this.canvas.height, 5, 0, 2 * Math.PI);
+                        this.ctx.arc(landmark.x * this.canvas.width, landmark.y * this.canvas.height, 6, 0, 2 * Math.PI);
+                        this.ctx.fill();
+                        
+                        // Add subtle shadow
+                        this.ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+                        this.ctx.beginPath();
+                        this.ctx.arc((landmark.x * this.canvas.width) + 1, (landmark.y * this.canvas.height) + 1, 6, 0, 2 * Math.PI);
                         this.ctx.fill();
                     }
+                }
+
+                // Add hand label (draw outside mirrored context so text is readable)
+                if (landmarks[0]) {
+                    // Temporarily restore context to draw non-mirrored text
+                    this.ctx.save();
+                    this.ctx.setTransform(1, 0, 0, 1, 0, 0); // Reset to normal transform
+                    
+                    // Calculate position for non-mirrored coordinates
+                    // Since we're in mirrored space, we need to flip the X coordinate back
+                    const textX = this.canvas.width - (landmarks[0].x * this.canvas.width) - 20;
+                    const textY = landmarks[0].y * this.canvas.height - 20;
+                    
+                    this.ctx.fillStyle = '#ffffff';
+                    this.ctx.font = 'bold 16px Arial';
+                    this.ctx.strokeStyle = '#000000';
+                    this.ctx.lineWidth = 3;
+                    this.ctx.strokeText(handedness, textX, textY);
+                    this.ctx.fillText(handedness, textX, textY);
+                    
+                    this.ctx.restore(); // Restore the mirrored transform
                 }
             }
 
@@ -324,19 +739,19 @@
                 return Math.sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
             }
 
-            calculateAngle(p1, p2, p3) { // Angle at p2, between vector p2p1 and p2p3
-                const v1 = this.calculateVector(p2, p1); // Vector from p2 to p1
-                const v2 = this.calculateVector(p2, p3); // Vector from p2 to p3
+            calculateAngle(p1, p2, p3) {
+                const v1 = this.calculateVector(p2, p1);
+                const v2 = this.calculateVector(p2, p3);
 
                 const dot = this.dotProduct(v1, v2);
                 const magV1 = this.magnitude(v1);
                 const magV2 = this.magnitude(v2);
 
-                if (magV1 === 0 || magV2 === 0) return 0; // Avoid division by zero
+                if (magV1 === 0 || magV2 === 0) return 0;
 
-                const cosAngle = Math.max(-1, Math.min(1, dot / (magV1 * magV2))); // Clamp value
+                const cosAngle = Math.max(-1, Math.min(1, dot / (magV1 * magV2)));
                 const angleRad = Math.acos(cosAngle);
-                return angleRad * (180 / Math.PI); // Convert to degrees
+                return angleRad * (180 / Math.PI);
             }
 
             calculateAndOutputAngles(landmarks, handedness, handIndex) {
@@ -348,71 +763,12 @@
                 if (this.lastUpdateTime && (now - this.lastUpdateTime) < updateRate) {
                     return;
                 }
-                // For per-hand update time:
-                // if (this.lastUpdateTime && this.lastUpdateTime[handKey] && (now - this.lastUpdateTime[handKey]) < updateRate) return;
-                // this.lastUpdateTime[handKey] = now;
-                this.lastUpdateTime = now; // Global update time for now
+                this.lastUpdateTime = now;
 
-                const handKey = `${handedness}_${handIndex}`; // Unique key per hand
+                const handKey = `${handedness}_${handIndex}`;
                 if (!this.lastAngles[handKey]) this.lastAngles[handKey] = {};
 
-                const currentAngles = {};
-
-                // Define finger joints using landmark indices from MediaPipe
-                // Each sub-array is [point1, middle_point, point2] for angle calculation at middle_point
-                const jointDefinitions = {
-                    // Thumb (more complex, often needs specific handling)
-                    'THUMB_CMC_MCP': [this.LANDMARK_NAMES.indexOf('WRIST'), this.LANDMARK_NAMES.indexOf('THUMB_CMC'), this.LANDMARK_NAMES.indexOf('THUMB_MCP')],
-                    'THUMB_MCP_IP': [this.LANDMARK_NAMES.indexOf('THUMB_CMC'), this.LANDMARK_NAMES.indexOf('THUMB_MCP'), this.LANDMARK_NAMES.indexOf('THUMB_IP')],
-                    'THUMB_IP_TIP': [this.LANDMARK_NAMES.indexOf('THUMB_MCP'), this.LANDMARK_NAMES.indexOf('THUMB_IP'), this.LANDMARK_NAMES.indexOf('THUMB_TIP')],
-
-                    // Index Finger
-                    'INDEX_MCP_PIP': [this.LANDMARK_NAMES.indexOf('INDEX_FINGER_MCP'), this.LANDMARK_NAMES.indexOf('INDEX_FINGER_PIP'), this.LANDMARK_NAMES.indexOf('INDEX_FINGER_DIP')], // Angle at PIP
-                    'INDEX_PIP_DIP': [this.LANDMARK_NAMES.indexOf('INDEX_FINGER_PIP'), this.LANDMARK_NAMES.indexOf('INDEX_FINGER_DIP'), this.LANDMARK_NAMES.indexOf('INDEX_FINGER_TIP')], // Angle at DIP
-                     // Angle of MCP relative to wrist/palm (approximation)
-                    'INDEX_WRIST_MCP': [this.LANDMARK_NAMES.indexOf('WRIST'),this.LANDMARK_NAMES.indexOf('INDEX_FINGER_MCP'), this.LANDMARK_NAMES.indexOf('INDEX_FINGER_PIP')],
-
-
-                    // Middle Finger
-                    'MIDDLE_MCP_PIP': [this.LANDMARK_NAMES.indexOf('MIDDLE_FINGER_MCP'), this.LANDMARK_NAMES.indexOf('MIDDLE_FINGER_PIP'), this.LANDMARK_NAMES.indexOf('MIDDLE_FINGER_DIP')],
-                    'MIDDLE_PIP_DIP': [this.LANDMARK_NAMES.indexOf('MIDDLE_FINGER_PIP'), this.LANDMARK_NAMES.indexOf('MIDDLE_FINGER_DIP'), this.LANDMARK_NAMES.indexOf('MIDDLE_FINGER_TIP')],
-                    'MIDDLE_WRIST_MCP': [this.LANDMARK_NAMES.indexOf('WRIST'),this.LANDMARK_NAMES.indexOf('MIDDLE_FINGER_MCP'), this.LANDMARK_NAMES.indexOf('MIDDLE_FINGER_PIP')],
-
-
-                    // Ring Finger
-                    'RING_MCP_PIP': [this.LANDMARK_NAMES.indexOf('RING_FINGER_MCP'), this.LANDMARK_NAMES.indexOf('RING_FINGER_PIP'), this.LANDMARK_NAMES.indexOf('RING_FINGER_DIP')],
-                    'RING_PIP_DIP': [this.LANDMARK_NAMES.indexOf('RING_FINGER_PIP'), this.LANDMARK_NAMES.indexOf('RING_FINGER_DIP'), this.LANDMARK_NAMES.indexOf('RING_FINGER_TIP')],
-                    'RING_WRIST_MCP': [this.LANDMARK_NAMES.indexOf('WRIST'),this.LANDMARK_NAMES.indexOf('RING_FINGER_MCP'), this.LANDMARK_NAMES.indexOf('RING_FINGER_PIP')],
-
-                    // Pinky Finger
-                    'PINKY_MCP_PIP': [this.LANDMARK_NAMES.indexOf('PINKY_MCP'), this.LANDMARK_NAMES.indexOf('PINKY_PIP'), this.LANDMARK_NAMES.indexOf('PINKY_DIP')],
-                    'PINKY_PIP_DIP': [this.LANDMARK_NAMES.indexOf('PINKY_PIP'), this.LANDMARK_NAMES.indexOf('PINKY_DIP'), this.LANDMARK_NAMES.indexOf('PINKY_TIP')],
-                    'PINKY_WRIST_MCP': [this.LANDMARK_NAMES.indexOf('WRIST'),this.LANDMARK_NAMES.indexOf('PINKY_MCP'), this.LANDMARK_NAMES.indexOf('PINKY_PIP')],
-                };
-
-                // Calculate wrist orientation (simplified - angle of palm relative to horizontal)
-                // A more robust wrist orientation would involve comparing wrist-to-MCP vectors against a reference.
-                const p0 = landmarks[this.LANDMARK_NAMES.indexOf('WRIST')];
-                const p9 = landmarks[this.LANDMARK_NAMES.indexOf('MIDDLE_FINGER_MCP')]; // Middle finger MCP as a reference for palm direction
-                if (p0 && p9) {
-                    currentAngles['WRIST_ROLL'] = Math.atan2(p9.y - p0.y, p9.x - p0.x) * (180 / Math.PI); // Roll around Z-axis (view axis)
-                     // Simple pitch: angle of wrist-MCP vector with XY plane (assuming Z is depth)
-                    const palmVector = this.calculateVector(p0, p9);
-                    currentAngles['WRIST_PITCH'] = Math.atan2(palmVector.z, Math.sqrt(palmVector.x**2 + palmVector.y**2)) * (180 / Math.PI);
-
-                }
-
-                for (const [jointName, points] of Object.entries(jointDefinitions)) {
-                    const p1 = landmarks[points[0]];
-                    const p2 = landmarks[points[1]]; // Angle is at this point
-                    const p3 = landmarks[points[2]];
-
-                    if (p1 && p2 && p3) {
-                        currentAngles[jointName] = this.calculateAngle(p1, p2, p3);
-                    } else {
-                        currentAngles[jointName] = 0; // Default if landmarks missing
-                    }
-                }
+                const currentAngles = this.calculateAllJointAngles(landmarks);
 
                 let hasSignificantChange = false;
                 for (const [jointName, angle] of Object.entries(currentAngles)) {
@@ -424,71 +780,322 @@
                 }
 
                 if (hasSignificantChange) {
-                    this.printToTerminal(`\n# ${handedness} Hand #${handIndex + 1} @ ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', fractionalSecondDigits: 3})}`);
+                    const timestamp = this.getFormattedTimestamp();
+                    this.printToTerminal(`\n═══ ${handedness} Hand #${handIndex + 1} ═══ ${timestamp}`, 'header');
 
-                    for (const [jointName, angle] of Object.entries(currentAngles)) {
-                        if (angle !== undefined) { // Only print if calculated
-                           this.printToTerminal(`${jointName}: ${angle.toFixed(1)}°`);
+                    // Group angles by finger for better readability
+                    const fingerGroups = this.groupAnglesByFinger(currentAngles);
+                    
+                    for (const [fingerName, angles] of Object.entries(fingerGroups)) {
+                        this.printToTerminal(`┌─ ${fingerName}:`, 'finger');
+                        for (const [jointName, angle] of Object.entries(angles)) {
+                            this.printToTerminal(`│  ${jointName}: ${angle.toFixed(1)}°`, 'angle');
                         }
                     }
 
                     if (enableIK) {
-                        this.generateIKCommands(currentAngles, landmarks, handedness, handIndex);
+                        this.generateEnhancedIKCommands(currentAngles, landmarks, handedness, handIndex);
                     }
-                    this.printToTerminal('---');
+                    
+                    this.printToTerminal('└─────────────────────────────────', 'divider');
                 }
             }
 
-            generateIKCommands(angles, landmarks, handedness, handIndex) {
-                this.printToTerminal('\n## IK Commands:');
-                const prefix = handedness.substring(0,1); // L or R
+            calculateAllJointAngles(landmarks) {
+                const angles = {};
 
-                // Example: Wrist Roll & Pitch (using the simplified calculations)
-                if (angles['WRIST_ROLL'] !== undefined) this.printToTerminal(`ROBOT_CMD ${prefix}_WRIST_ROLL ${angles['WRIST_ROLL'].toFixed(1)}`);
-                if (angles['WRIST_PITCH'] !== undefined) this.printToTerminal(`ROBOT_CMD ${prefix}_WRIST_PITCH ${angles['WRIST_PITCH'].toFixed(1)}`);
+                // Enhanced joint definitions with better anatomical accuracy
+                const jointDefinitions = {
+                    // Thumb angles
+                    'THUMB_CMC_FLEX': [0, 1, 2],
+                    'THUMB_MCP_FLEX': [1, 2, 3],
+                    'THUMB_IP_FLEX': [2, 3, 4],
+                    
+                    // Index finger angles
+                    'INDEX_MCP_FLEX': [0, 5, 6],
+                    'INDEX_PIP_FLEX': [5, 6, 7],
+                    'INDEX_DIP_FLEX': [6, 7, 8],
+                    
+                    // Middle finger angles
+                    'MIDDLE_MCP_FLEX': [0, 9, 10],
+                    'MIDDLE_PIP_FLEX': [9, 10, 11],
+                    'MIDDLE_DIP_FLEX': [10, 11, 12],
+                    
+                    // Ring finger angles
+                    'RING_MCP_FLEX': [0, 13, 14],
+                    'RING_PIP_FLEX': [13, 14, 15],
+                    'RING_DIP_FLEX': [14, 15, 16],
+                    
+                    // Pinky finger angles
+                    'PINKY_MCP_FLEX': [0, 17, 18],
+                    'PINKY_PIP_FLEX': [17, 18, 19],
+                    'PINKY_DIP_FLEX': [18, 19, 20]
+                };
 
-                // Example: Index Finger MCP and PIP flexion
-                if (angles['INDEX_WRIST_MCP'] !== undefined) this.printToTerminal(`ROBOT_CMD ${prefix}_INDEX_MCP_FLEX ${angles['INDEX_WRIST_MCP'].toFixed(1)}`);
-                if (angles['INDEX_MCP_PIP'] !== undefined) this.printToTerminal(`ROBOT_CMD ${prefix}_INDEX_PIP_FLEX ${angles['INDEX_MCP_PIP'].toFixed(1)}`);
+                for (const [jointName, points] of Object.entries(jointDefinitions)) {
+                    const p1 = landmarks[points[0]];
+                    const p2 = landmarks[points[1]];
+                    const p3 = landmarks[points[2]];
 
-                // Example: Thumb MCP flexion
-                if (angles['THUMB_CMC_MCP'] !== undefined) this.printToTerminal(`ROBOT_CMD ${prefix}_THUMB_CMC_FLEX ${angles['THUMB_CMC_MCP'].toFixed(1)}`);
-                if (angles['THUMB_MCP_IP'] !== undefined) this.printToTerminal(`ROBOT_CMD ${prefix}_THUMB_MCP_FLEX ${angles['THUMB_MCP_IP'].toFixed(1)}`);
+                    if (p1 && p2 && p3) {
+                        angles[jointName] = this.calculateAngle(p1, p2, p3);
+                    }
+                }
 
-                // Example: Gripper state based on distance between thumb tip and index finger tip
-                const thumbTip = landmarks[this.LANDMARK_NAMES.indexOf('THUMB_TIP')];
-                const indexTip = landmarks[this.LANDMARK_NAMES.indexOf('INDEX_FINGER_TIP')];
-                if (thumbTip && indexTip) {
-                    const distVector = this.calculateVector(thumbTip, indexTip);
-                    const distance = this.magnitude(distVector); // This distance is in normalized screen coordinates
-                    // Heuristic: if distance is small, gripper is closed. Scale might need adjustment.
-                    const gripperThreshold = 0.05; // Needs tuning
-                    const gripperState = distance < gripperThreshold ? "CLOSED" : "OPEN";
-                    this.printToTerminal(`ROBOT_CMD ${prefix}_GRIPPER ${gripperState} (dist: ${distance.toFixed(3)})`);
+                // Calculate wrist orientation
+                const wrist = landmarks[0];
+                const middleMCP = landmarks[9];
+                if (wrist && middleMCP) {
+                    const palmVector = this.calculateVector(wrist, middleMCP);
+                    angles['WRIST_ROLL'] = Math.atan2(palmVector.y, palmVector.x) * (180 / Math.PI);
+                    angles['WRIST_PITCH'] = Math.atan2(palmVector.z, Math.sqrt(palmVector.x**2 + palmVector.y**2)) * (180 / Math.PI);
+                }
+
+                return angles;
+            }
+
+            groupAnglesByFinger(angles) {
+                const groups = {
+                    'WRIST': {},
+                    'THUMB': {},
+                    'INDEX': {},
+                    'MIDDLE': {},
+                    'RING': {},
+                    'PINKY': {}
+                };
+
+                for (const [jointName, angle] of Object.entries(angles)) {
+                    if (jointName.startsWith('WRIST')) {
+                        groups.WRIST[jointName] = angle;
+                    } else if (jointName.startsWith('THUMB')) {
+                        groups.THUMB[jointName] = angle;
+                    } else if (jointName.startsWith('INDEX')) {
+                        groups.INDEX[jointName] = angle;
+                    } else if (jointName.startsWith('MIDDLE')) {
+                        groups.MIDDLE[jointName] = angle;
+                    } else if (jointName.startsWith('RING')) {
+                        groups.RING[jointName] = angle;
+                    } else if (jointName.startsWith('PINKY')) {
+                        groups.PINKY[jointName] = angle;
+                    }
+                }
+
+                // Remove empty groups
+                return Object.fromEntries(Object.entries(groups).filter(([key, value]) => Object.keys(value).length > 0));
+            }
+
+            generateEnhancedIKCommands(angles, landmarks, handedness, handIndex) {
+                this.printToTerminal('\n┌─ IK COMMANDS:', 'ik-header');
+                const prefix = handedness.substring(0, 1);
+
+                // Enhanced IK command generation with more realistic robot mappings
+                const commandMappings = {
+                    'WRIST_ROLL': `SERVO_${prefix}_WRIST_ROLL`,
+                    'WRIST_PITCH': `SERVO_${prefix}_WRIST_PITCH`,
+                    'THUMB_MCP_FLEX': `SERVO_${prefix}_THUMB_FLEX`,
+                    'INDEX_MCP_FLEX': `SERVO_${prefix}_INDEX_FLEX`,
+                    'MIDDLE_MCP_FLEX': `SERVO_${prefix}_MIDDLE_FLEX`,
+                    'RING_MCP_FLEX': `SERVO_${prefix}_RING_FLEX`,
+                    'PINKY_MCP_FLEX': `SERVO_${prefix}_PINKY_FLEX`
+                };
+
+                for (const [angleKey, servoCommand] of Object.entries(commandMappings)) {
+                    if (angles[angleKey] !== undefined) {
+                        // Map angle to servo range (0-180 degrees typically)
+                        const servoAngle = Math.max(0, Math.min(180, angles[angleKey]));
+                        this.printToTerminal(`│  ${servoCommand} ${servoAngle.toFixed(1)}`, 'ik-command');
+                        this.commandCount++;
+                    }
+                }
+
+                // Advanced gripper control
+                this.generateGripperCommands(landmarks, handedness);
+                
+                this.printToTerminal('└─ END IK COMMANDS', 'ik-footer');
+            }
+
+            generateGripperCommands(landmarks, handedness) {
+                const thumbTip = landmarks[4];
+                const indexTip = landmarks[8];
+                const middleTip = landmarks[12];
+                
+                if (thumbTip && indexTip && middleTip) {
+                    const thumbIndexDist = this.magnitude(this.calculateVector(thumbTip, indexTip));
+                    const thumbMiddleDist = this.magnitude(this.calculateVector(thumbTip, middleTip));
+                    
+                    const avgDistance = (thumbIndexDist + thumbMiddleDist) / 2;
+                    const gripperValue = Math.max(0, Math.min(100, (1 - avgDistance / 0.1) * 100));
+                    
+                    const prefix = handedness.substring(0, 1);
+                    this.printToTerminal(`│  GRIPPER_${prefix} ${gripperValue.toFixed(1)}% (dist: ${avgDistance.toFixed(3)})`, 'ik-command');
                 }
             }
 
-            printToTerminal(text) {
-                const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit'});
-                this.terminal.textContent += `[${timestamp}] ${text}\n`;
-                this.terminal.scrollTop = this.terminal.scrollHeight; // Auto-scroll
+            updatePerformanceMetrics(processingTime) {
+                this.processingTimes.push(processingTime);
+                if (this.processingTimes.length > 60) { // Keep last 60 measurements
+                    this.processingTimes.shift();
+                }
+
+                const avgTime = this.processingTimes.reduce((a, b) => a + b, 0) / this.processingTimes.length;
+                document.getElementById('avgProcessingTime').textContent = `${avgTime.toFixed(1)}ms`;
+                document.getElementById('framesProcessed').textContent = this.performanceMetrics.framesProcessed;
+            }
+
+            updateFPS() {
+                this.fpsCounter++;
+                const now = Date.now();
+                if (now - this.lastFpsTime >= 1000) {
+                    const fps = Math.round(this.fpsCounter * 1000 / (now - this.lastFpsTime));
+                    document.getElementById('fpsCounter').textContent = fps;
+                    document.getElementById('processingFPS').textContent = fps;
+                    this.fpsCounter = 0;
+                    this.lastFpsTime = now;
+                }
+            }
+
+            updateConfidenceDisplay(confidence) {
+                const percentage = Math.round(confidence * 100);
+                document.getElementById('confidenceValue').textContent = `${percentage}%`;
+                document.getElementById('avgConfidence').textContent = `${percentage}%`;
+                document.getElementById('confidenceBar').style.width = `${percentage}%`;
+            }
+
+            updateCameraStatus(status) {
+                const statusElement = document.getElementById('cameraStatus');
+                const indicator = statusElement.querySelector('.status-indicator');
+                
+                statusElement.innerHTML = `<span class="status-indicator status-${status}"></span>`;
+                
+                switch (status) {
+                    case 'connected':
+                        statusElement.innerHTML += 'Connected';
+                        break;
+                    case 'processing':
+                        statusElement.innerHTML += 'Processing';
+                        break;
+                    case 'disconnected':
+                    default:
+                        statusElement.innerHTML += 'Disconnected';
+                        break;
+                }
+            }
+
+            showProcessingStatus(show) {
+                const element = document.getElementById('processingStatus');
+                if (show) {
+                    element.classList.remove('hidden');
+                } else {
+                    element.classList.add('hidden');
+                }
+            }
+
+            startPerformanceTracking() {
+                setInterval(() => {
+                    if (this.startTime) {
+                        const duration = Date.now() - this.startTime;
+                        const hours = Math.floor(duration / 3600000);
+                        const minutes = Math.floor((duration % 3600000) / 60000);
+                        const seconds = Math.floor((duration % 60000) / 1000);
+                        document.getElementById('sessionDuration').textContent = 
+                            `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                    }
+                    
+                    document.getElementById('commandCount').textContent = this.commandCount;
+                }, 1000);
+            }
+
+            getFormattedTimestamp() {
+                const detailed = document.getElementById('timestampFormat').checked;
+                const now = new Date();
+                
+                if (detailed) {
+                    return now.toLocaleString([], { 
+                        hour: '2-digit', 
+                        minute: '2-digit', 
+                        second: '2-digit', 
+                        fractionalSecondDigits: 3,
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric'
+                    });
+                } else {
+                    return now.toLocaleTimeString([], { 
+                        hour: '2-digit', 
+                        minute: '2-digit', 
+                        second: '2-digit', 
+                        fractionalSecondDigits: 3 
+                    });
+                }
+            }
+
+            printToTerminal(text, type = 'normal') {
+                const timestamp = new Date().toLocaleTimeString([], { 
+                    hour: '2-digit', 
+                    minute: '2-digit', 
+                    second: '2-digit' 
+                });
+                
+                let colorCode = '';
+                switch (type) {
+                    case 'success': colorCode = '\x1b[32m'; break; // Green
+                    case 'error': colorCode = '\x1b[31m'; break;   // Red
+                    case 'warning': colorCode = '\x1b[33m'; break; // Yellow
+                    case 'info': colorCode = '\x1b[36m'; break;    // Cyan
+                    case 'header': colorCode = '\x1b[35m'; break;  // Magenta
+                    case 'finger': colorCode = '\x1b[34m'; break;  // Blue
+                    case 'angle': colorCode = '\x1b[37m'; break;   // White
+                    case 'ik-header': colorCode = '\x1b[93m'; break; // Bright Yellow
+                    case 'ik-command': colorCode = '\x1b[92m'; break; // Bright Green
+                    case 'ik-footer': colorCode = '\x1b[93m'; break; // Bright Yellow
+                    case 'divider': colorCode = '\x1b[90m'; break; // Dark Gray
+                    default: colorCode = '\x1b[0m'; break;         // Reset
+                }
+                
+                this.terminal.textContent += `[${timestamp}] ${colorCode}${text}\x1b[0m\n`;
+                
+                if (document.getElementById('autoScroll').checked) {
+                    this.terminal.scrollTop = this.terminal.scrollHeight;
+                }
             }
 
             clearTerminal() {
                 this.terminal.textContent = '';
-                this.printToTerminal('SYSTEM: Terminal cleared.');
+                this.printToTerminal('SYSTEM: Terminal cleared', 'info');
+            }
+
+            exportTerminalLog() {
+                const content = this.terminal.textContent;
+                const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+                const filename = `hand-ik-log-${timestamp}.txt`;
+                
+                const blob = new Blob([content], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                a.click();
+                
+                URL.revokeObjectURL(url);
+                this.printToTerminal(`SYSTEM: Log exported as ${filename}`, 'success');
             }
 
             updateStatus() {
                 if (this.lastUpdateTime) {
-                    document.getElementById('lastUpdate').textContent = new Date(this.lastUpdateTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit'});
+                    const lastUpdate = new Date(this.lastUpdateTime);
+                    document.getElementById('lastUpdate').textContent = lastUpdate.toLocaleTimeString([], { 
+                        hour: '2-digit', 
+                        minute: '2-digit', 
+                        second: '2-digit' 
+                    });
                 }
             }
         }
 
-        // Initialize the application when the DOM is ready
+        // Initialize the enhanced application
         document.addEventListener('DOMContentLoaded', () => {
-            const controller = new HandIKController();
+            const controller = new AdvancedHandIKController();
         });
     </script>
 </body>
