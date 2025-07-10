@@ -1,0 +1,628 @@
+<!DOCTYPE html><html lang="en"><head><meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://code.jquery.com https://unpkg.com https://d3js.org https://threejs.org https://cdn.plot.ly https://stackpath.bootstrapcdn.com https://maps.googleapis.com https://cdn.tailwindcss.com https://ajax.googleapis.com https://kit.fontawesome.com https://cdn.datatables.net https://maxcdn.bootstrapcdn.com https://code.highcharts.com https://tako-static-assets-production.s3.amazonaws.com https://www.youtube.com https://fonts.googleapis.com https://fonts.gstatic.com https://pfst.cf2.poecdn.net https://puc.poecdn.net https://i.imgur.com https://wikimedia.org https://*.icons8.com https://*.giphy.com https://picsum.photos https://images.unsplash.com; frame-src 'self' https://www.youtube.com https://trytako.com; child-src 'self'; manifest-src 'self'; worker-src 'self'; upgrade-insecure-requests; block-all-mixed-content;">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trimline Lawn Care LLC - Professional Lawn Care Services</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" href="favicon.ico" type="image/x-icon" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:title" content="Trimline Lawn Care LLC - Professional Lawn Care Services" />
+    <meta property="og:description" content="We Stand For Great Lawn Care! Professional lawn care and landscape maintenance tailored for your outdoor space." />
+    <meta property="og:image" content="https://pfst.cf2.poecdn.net/base/image/b77c2caf97a891c024bf09ab6bdb83d3ad308e2c6e8793221a19e68b75adf644?w=1316&h=640" />
+    <meta property="og:url" content="https://yourdomain.com" />
+    <meta property="og:type" content="website" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Trimline Lawn Care LLC - Professional Lawn Care Services" />
+    <meta name="twitter:description" content="We Stand For Great Lawn Care! Professional lawn care and landscape maintenance tailored for your outdoor space." />
+    <meta name="twitter:image" content="https://pfst.cf2.poecdn.net/base/image/b77c2caf97a891c024bf09ab6bdb83d3ad308e2c6e8793221a19e68b75adf644?w=1316&h=640" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#22c55e',
+                        secondary: '#16a34a',
+                        accent: '#5D5CDE'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        
+        /* reset default browser spacing */
+        html, body { margin: 0; padding: 0; }
+        
+        .hero-bg {
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.7), rgba(22, 163, 74, 0.8)), 
+                        url('https://pfst.cf2.poecdn.net/base/image/b77c2caf97a891c024bf09ab6bdb83d3ad308e2c6e8793221a19e68b75adf644?w=1316&h=640');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+        
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .equipment-card {
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+        
+        .equipment-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+        
+        .before-after {
+            position: relative;
+            overflow: hidden;
+            border-radius: 12px;
+        }
+        
+        .before-after:hover .overlay {
+            opacity: 1;
+        }
+        
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(34, 197, 94, 0.9), rgba(22, 163, 74, 0.9));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+        
+        .floating-header {
+            backdrop-filter: blur(20px);
+            background: rgba(255, 255, 255, 0.95);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+        
+        .dark .floating-header {
+            background: rgba(17, 24, 39, 0.95);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .service-icon {
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            color: white;
+            width: 4rem;
+            height: 4rem;
+            border-radius: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 8px 32px rgba(34, 197, 94, 0.3);
+        }
+    </style>
+</head>
+<body class="bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
+    <!-- Semantic, fixed header -->
+    <header>
+        <!-- Navigation -->
+        <nav 
+            class="floating-header shadow-2xl fixed top-0 left-0 w-full z-50 transition-all duration-300" 
+            aria-label="Main Navigation"
+        >
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center py-6">
+                    <div class="flex items-center">
+                        <div class="bg-gradient-to-br from-primary to-secondary text-white p-3 rounded-xl mr-4 shadow-lg">
+                            <i class="fas fa-leaf text-2xl"></i>
+                        </div>
+                        <div>
+                            <h1 class="text-2xl font-black gradient-text">Trimline Lawn Care</h1>
+                            <p class="text-sm text-gray-600 dark:text-gray-400 font-medium">Professional Excellence</p>
+                        </div>
+                    </div>
+                    <div class="hidden md:flex space-x-8">
+                        <a href="#home" class="text-gray-700 dark:text-gray-300 hover:text-primary transition-all duration-300 font-semibold text-lg relative group">
+                            Home
+                            <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
+                        </a>
+                        <a href="#equipment" class="text-gray-700 dark:text-gray-300 hover:text-primary transition-all duration-300 font-semibold text-lg relative group">
+                            Equipment
+                            <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
+                        </a>
+                        <a href="#services" class="text-gray-700 dark:text-gray-300 hover:text-primary transition-all duration-300 font-semibold text-lg relative group">
+                            Services
+                            <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
+                        </a>
+                        <a href="#portfolio" class="text-gray-700 dark:text-gray-300 hover:text-primary transition-all duration-300 font-semibold text-lg relative group">
+                            Portfolio
+                            <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
+                        </a>
+                        <a href="#contact" class="text-gray-700 dark:text-gray-300 hover:text-primary transition-all duration-300 font-semibold text-lg relative group">
+                            Contact
+                            <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
+                        </a>
+                    </div>
+                    <button id="mobile-menu-button" class="md:hidden text-gray-700 dark:text-gray-300 p-2">
+                        <i class="fas fa-bars text-2xl"></i>
+                    </button>
+                </div>
+                <!-- Mobile Menu -->
+                <div id="mobile-menu" class="md:hidden hidden pb-6">
+                    <div class="space-y-2">
+                        <a href="#home" class="block py-3 px-4 text-gray-700 dark:text-gray-300 hover:text-primary hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-all">Home</a>
+                        <a href="#equipment" class="block py-3 px-4 text-gray-700 dark:text-gray-300 hover:text-primary hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-all">Equipment</a>
+                        <a href="#services" class="block py-3 px-4 text-gray-700 dark:text-gray-300 hover:text-primary hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-all">Services</a>
+                        <a href="#portfolio" class="block py-3 px-4 text-gray-700 dark:text-gray-300 hover:text-primary hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-all">Portfolio</a>
+                        <a href="#contact" class="block py-3 px-4 text-gray-700 dark:text-gray-300 hover:text-primary hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-all">Contact</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero-bg text-white py-40 mt-24 relative overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-r from-black/60 via-transparent to-black/60"></div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="text-center">
+                <div class="glass-effect rounded-3xl p-12 max-w-4xl mx-auto">
+                    <h1 class="text-6xl md:text-7xl font-black mb-8 leading-tight">
+                        <span class="block text-white">Professional</span>
+                        <span class="block bg-gradient-to-r from-yellow-400 to-green-400 bg-clip-text text-transparent">Lawn Care</span>
+                        <span class="block text-white">Excellence</span>
+                    </h1>
+                    <p class="text-2xl md:text-3xl mb-12 text-gray-200 font-light">
+                        "We Stand For Great Lawn Care!"
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-6 justify-center items-center">
+                        <a href="#contact" class="bg-gradient-to-r from-primary to-secondary text-white px-10 py-5 rounded-2xl font-bold hover:scale-105 transition-all duration-300 text-xl shadow-2xl">
+                            <i class="fas fa-quote-left mr-3"></i>Get Free Quote
+                        </a>
+                        <a href="tel:715-613-0536" class="glass-effect border-2 border-white text-white px-10 py-5 rounded-2xl font-bold hover:bg-white hover:text-primary transition-all duration-300 text-xl">
+                            <i class="fas fa-phone mr-3"></i>Call (715) 613-0536
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Scroll indicator -->
+        <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+            <i class="fas fa-chevron-down text-white text-2xl opacity-70"></i>
+        </div>
+    </section>
+
+    <!-- Equipment Section -->
+    <section id="equipment" class="py-24 bg-white dark:bg-gray-900">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-20">
+                <h3 class="text-5xl font-black mb-6 gradient-text">Professional Equipment</h3>
+                <p class="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
+                    Our state-of-the-art John Deere equipment ensures precision, efficiency, and outstanding results for every project.
+                </p>
+            </div>
+            
+            <div class="grid lg:grid-cols-2 gap-12 mb-16">
+                <!-- Main Equipment Image -->
+                <div class="equipment-card bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 rounded-3xl p-8 shadow-2xl">
+                    <img src="https://pfst.cf2.poecdn.net/base/image/b77c2caf97a891c024bf09ab6bdb83d3ad308e2c6e8793221a19e68b75adf644?w=1316&amp;h=640" alt="Professional Lawn Care Equipment" class="w-full h-80 object-cover rounded-2xl mb-6 shadow-lg">
+                    <h4 class="text-2xl font-bold mb-4 text-gray-800 dark:text-white">Complete Lawn Care Fleet</h4>
+                    <p class="text-gray-600 dark:text-gray-400 text-lg">
+                        Our professional-grade equipment lineup includes commercial mowers, specialized trailers, and all the tools needed for comprehensive lawn care services.
+                    </p>
+                </div>
+                
+                <!-- John Deere Tractor -->
+                <div class="equipment-card bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 rounded-3xl p-8 shadow-2xl">
+                    <img src="https://pfst.cf2.poecdn.net/base/image/0e38fff8f92c48d9d32f52814d34ad6904c09b5f66ee4977a87843e4c1b3571e?w=2048&amp;h=1404" alt="John Deere Tractor with Loader" class="w-full h-80 object-cover rounded-2xl mb-6 shadow-lg">
+                    <h4 class="text-2xl font-bold mb-4 text-gray-800 dark:text-white">John Deere Utility Tractor</h4>
+                    <p class="text-gray-600 dark:text-gray-400 text-lg">
+                        Heavy-duty tractor with loader attachment for landscaping, material handling, and comprehensive property maintenance projects.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Equipment Features -->
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="text-center">
+                    <div class="service-icon mx-auto">
+                        <i class="fas fa-cog text-3xl"></i>
+                    </div>
+                    <h5 class="text-xl font-bold mb-3">Commercial Grade</h5>
+                    <p class="text-gray-600 dark:text-gray-400">Professional equipment built for durability and superior performance</p>
+                </div>
+                <div class="text-center">
+                    <div class="service-icon mx-auto">
+                        <i class="fas fa-tools text-3xl"></i>
+                    </div>
+                    <h5 class="text-xl font-bold mb-3">Well Maintained</h5>
+                    <p class="text-gray-600 dark:text-gray-400">Regular maintenance ensures reliable operation and consistent results</p>
+                </div>
+                <div class="text-center">
+                    <div class="service-icon mx-auto">
+                        <i class="fas fa-truck text-3xl"></i>
+                    </div>
+                    <h5 class="text-xl font-bold mb-3">Mobile Service</h5>
+                    <p class="text-gray-600 dark:text-gray-400">Fully equipped trucks bring everything needed directly to your property</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="py-24 bg-gray-50 dark:bg-gray-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-20">
+                <h3 class="text-5xl font-black mb-6 gradient-text">Our Services</h3>
+                <p class="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">Professional lawn care and landscape maintenance services tailored to your property's unique needs</p>
+            </div>
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Lawn Care -->
+                <div class="bg-white dark:bg-gray-900 p-8 rounded-3xl shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-105">
+                    <div class="service-icon">
+                        <i class="fas fa-cut text-3xl"></i>
+                    </div>
+                    <h4 class="text-2xl font-bold mb-4">Professional Lawn Care</h4>
+                    <p class="text-gray-600 dark:text-gray-400 mb-6">Comprehensive lawn maintenance using commercial-grade equipment for pristine results.</p>
+                    <ul class="text-gray-600 dark:text-gray-400 space-y-3">
+                        <li><i class="fas fa-check text-primary mr-3"></i>Precision Mowing &amp; Edging</li>
+                        <li><i class="fas fa-check text-primary mr-3"></i>Weed Control &amp; Treatment</li>
+                        <li><i class="fas fa-check text-primary mr-3"></i>Fertilization Programs</li>
+                        <li><i class="fas fa-check text-primary mr-3"></i>Lawn Health Assessment</li>
+                    </ul>
+                </div>
+
+                <!-- Spring & Fall Cleanup -->
+                <div class="bg-white dark:bg-gray-900 p-8 rounded-3xl shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-105">
+                    <div class="service-icon">
+                        <i class="fas fa-leaf text-3xl"></i>
+                    </div>
+                    <h4 class="text-2xl font-bold mb-4">Seasonal Cleanup</h4>
+                    <p class="text-gray-600 dark:text-gray-400 mb-6">Thorough seasonal preparation to protect and enhance your landscape year-round.</p>
+                    <ul class="text-gray-600 dark:text-gray-400 space-y-3">
+                        <li><i class="fas fa-check text-primary mr-3"></i>Complete Leaf Removal</li>
+                        <li><i class="fas fa-check text-primary mr-3"></i>Debris &amp; Branch Cleanup</li>
+                        <li><i class="fas fa-check text-primary mr-3"></i>Garden Bed Preparation</li>
+                        <li><i class="fas fa-check text-primary mr-3"></i>Gutter Cleaning</li>
+                    </ul>
+                </div>
+
+                <!-- Landscape Maintenance -->
+                <div class="bg-white dark:bg-gray-900 p-8 rounded-3xl shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-105">
+                    <div class="service-icon">
+                        <i class="fas fa-tree text-3xl"></i>
+                    </div>
+                    <h4 class="text-2xl font-bold mb-4">Landscape Maintenance</h4>
+                    <p class="text-gray-600 dark:text-gray-400 mb-6">Complete landscape care and enhancement services to beautify your property.</p>
+                    <ul class="text-gray-600 dark:text-gray-400 space-y-3">
+                        <li><i class="fas fa-check text-primary mr-3"></i>Professional Pruning &amp; Trimming</li>
+                        <li><i class="fas fa-check text-primary mr-3"></i>Planting &amp; Landscape Design</li>
+                        <li><i class="fas fa-check text-primary mr-3"></i>Mulching &amp; Bed Maintenance</li>
+                        <li><i class="fas fa-check text-primary mr-3"></i>Irrigation System Care</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Portfolio Section -->
+    <section id="portfolio" class="py-24 bg-white dark:bg-gray-900">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-20">
+                <h3 class="text-5xl font-black mb-6 gradient-text">Our Work</h3>
+                <p class="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
+                    See the transformation we bring to lawns and landscapes. Quality results that speak for themselves.
+                </p>
+            </div>
+            
+            <!-- Before/After Showcase -->
+            <div class="mb-16">
+                <h4 class="text-3xl font-bold text-center mb-12">Before &amp; After Results</h4>
+                <div class="grid lg:grid-cols-2 gap-8">
+                    <div class="before-after bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 rounded-3xl p-8 shadow-2xl">
+                        <img src="https://pfst.cf2.poecdn.net/base/image/279f081c92790207bdb2297061df6b9f4a2e8aeacb80ea9edd8f9870e1bb0c2c?w=1440&amp;h=1440" alt="Lawn care before and after results" class="w-full h-80 object-cover rounded-2xl mb-6 shadow-lg">
+                        <div class="overlay">
+                            <div class="text-center">
+                                <h5 class="text-2xl font-bold mb-2">Professional Results</h5>
+                                <p class="text-lg">Transforming neglected lawns into beautiful landscapes</p>
+                            </div>
+                        </div>
+                        <h5 class="text-2xl font-bold mb-4 text-gray-800 dark:text-white">Lawn Restoration Project</h5>
+                        <p class="text-gray-600 dark:text-gray-400 text-lg">
+                            Complete lawn renovation including soil treatment, reseeding, and ongoing maintenance program.
+                        </p>
+                    </div>
+                    
+                    <div class="space-y-8">
+                        <!-- Additional Work Images -->
+                        <div class="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 rounded-2xl p-6 shadow-xl">
+                            <h5 class="text-xl font-bold mb-4 text-gray-800 dark:text-white">Professional Equipment in Action</h5>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="bg-primary/10 rounded-lg p-4 text-center">
+                                    <i class="fas fa-tractor text-3xl text-primary mb-2"></i>
+                                    <p class="text-sm font-medium">Heavy-Duty Equipment</p>
+                                </div>
+                                <div class="bg-primary/10 rounded-lg p-4 text-center">
+                                    <i class="fas fa-leaf text-3xl text-primary mb-2"></i>
+                                    <p class="text-sm font-medium">Eco-Friendly Methods</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 rounded-2xl p-6 shadow-xl">
+                            <h5 class="text-xl font-bold mb-4 text-gray-800 dark:text-white">Service Guarantee</h5>
+                            <div class="space-y-3">
+                                <div class="flex items-center">
+                                    <i class="fas fa-check-circle text-primary mr-3"></i>
+                                    <span class="text-gray-600 dark:text-gray-400">100% Satisfaction Guarantee</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <i class="fas fa-clock text-primary mr-3"></i>
+                                    <span class="text-gray-600 dark:text-gray-400">On-Time Service</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <i class="fas fa-dollar-sign text-primary mr-3"></i>
+                                    <span class="text-gray-600 dark:text-gray-400">Competitive Pricing</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid lg:grid-cols-2 gap-12 items-center">
+                <div>
+                    <h3 class="text-4xl font-bold mb-6">About Trimline Lawn Care LLC</h3>
+                    <p class="text-lg text-gray-600 dark:text-gray-400 mb-6">
+                        Led by Bryan Vine, Trimline Lawn Care LLC is dedicated to providing exceptional lawn care and landscape maintenance services. We take pride in transforming outdoor spaces and maintaining beautiful, healthy lawns for our clients.
+                    </p>
+                    <p class="text-lg text-gray-600 dark:text-gray-400 mb-8">
+                        Our commitment to quality workmanship and customer satisfaction has made us a trusted name in lawn care services. From routine maintenance to seasonal cleanups, we handle every project with professionalism and attention to detail.
+                    </p>
+                    <div class="grid sm:grid-cols-2 gap-6">
+                        <div class="flex items-center">
+                            <div class="bg-primary/10 w-12 h-12 rounded-lg flex items-center justify-center mr-4">
+                                <i class="fas fa-award text-primary"></i>
+                            </div>
+                            <div>
+                                <h5 class="font-semibold">Quality Work</h5>
+                                <p class="text-gray-600 dark:text-gray-400 text-sm">Professional results every time</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="bg-primary/10 w-12 h-12 rounded-lg flex items-center justify-center mr-4">
+                                <i class="fas fa-clock text-primary"></i>
+                            </div>
+                            <div>
+                                <h5 class="font-semibold">Reliable Service</h5>
+                                <p class="text-gray-600 dark:text-gray-400 text-sm">On-time and dependable</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="relative">
+                    <div class="bg-gradient-to-br from-primary to-secondary rounded-2xl p-8 text-white">
+                        <div class="text-center">
+                            <i class="fas fa-user-circle text-6xl mb-4 opacity-80"></i>
+                            <h4 class="text-2xl font-bold mb-2">Bryan Vine</h4>
+                            <p class="text-lg opacity-90">Owner &amp; Operator</p>
+                            <div class="mt-6 pt-6 border-t border-white/20">
+                                <p class="opacity-90">Passionate about creating beautiful outdoor spaces with professional lawn care services.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-20 bg-gray-50 dark:bg-gray-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h3 class="text-4xl font-bold mb-4">Get In Touch</h3>
+                <p class="text-xl text-gray-600 dark:text-gray-400">Ready to transform your lawn? Contact us for a free quote!</p>
+            </div>
+            <div class="grid lg:grid-cols-2 gap-12">
+                <!-- Contact Info -->
+                <div>
+                    <h4 class="text-2xl font-semibold mb-8">Contact Information</h4>
+                    <div class="space-y-6">
+                        <div class="flex items-center">
+                            <div class="bg-primary/10 w-12 h-12 rounded-lg flex items-center justify-center mr-4">
+                                <i class="fas fa-phone text-primary"></i>
+                            </div>
+                            <div>
+                                <h5 class="font-semibold">Phone</h5>
+                                <a href="tel:715-613-0536" class="text-primary hover:underline">(715) 613-0536</a>
+                            </div>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="bg-primary/10 w-12 h-12 rounded-lg flex items-center justify-center mr-4">
+                                <i class="fas fa-envelope text-primary"></i>
+                            </div>
+                            <div>
+                                <h5 class="font-semibold">Email</h5>
+                                <a href="mailto:trimlinelawncarellc@yahoo.com" class="text-primary hover:underline">trimlinelawncarellc@yahoo.com</a>
+                            </div>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="bg-primary/10 w-12 h-12 rounded-lg flex items-center justify-center mr-4">
+                                <i class="fab fa-facebook text-primary"></i>
+                            </div>
+                            <div>
+                                <h5 class="font-semibold">Facebook</h5>
+                                <a href="https://facebook.com/trimlinelawncarellc" target="_blank" class="text-primary hover:underline">@trimlinelawncarellc</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contact Form -->
+                <div class="bg-white dark:bg-gray-900 p-8 rounded-xl shadow-lg">
+                    <h4 class="text-2xl font-semibold mb-6">Request a Quote</h4>
+                    <form class="space-y-6">
+                        <div class="grid sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium mb-2">First Name</label>
+                                <input type="text" class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent dark:bg-gray-800 text-base">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Last Name</label>
+                                <input type="text" class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent dark:bg-gray-800 text-base">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Email</label>
+                            <input type="email" class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent dark:bg-gray-800 text-base">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Phone</label>
+                            <input type="tel" class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent dark:bg-gray-800 text-base">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Service Needed</label>
+                            <select class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent dark:bg-gray-800 text-base">
+                                <option>Lawn Care</option>
+                                <option>Spring/Fall Cleanup</option>
+                                <option>Landscape Maintenance</option>
+                                <option>Multiple Services</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Message</label>
+                            <textarea rows="4" class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent dark:bg-gray-800 text-base" placeholder="Tell us about your project..."></textarea>
+                        </div>
+                        <button type="submit" class="w-full bg-primary text-white py-3 px-6 rounded-lg font-semibold hover:bg-secondary transition-colors">
+                            Send Message
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-3 gap-8">
+                <div>
+                    <div class="flex items-center mb-4">
+                        <div class="bg-primary text-white p-2 rounded-lg mr-3">
+                            <i class="fas fa-leaf text-xl"></i>
+                        </div>
+                        <h4 class="text-xl font-bold">Trimline Lawn Care LLC</h4>
+                    </div>
+                    <p class="text-gray-400 mb-4">Professional lawn care and landscape maintenance services you can trust.</p>
+                    <div class="flex space-x-4">
+                        <a href="https://facebook.com/trimlinelawncarellc" target="_blank" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-facebook text-xl"></i>
+                        </a>
+                    </div>
+                </div>
+                <div>
+                    <h5 class="font-semibold mb-4">Services</h5>
+                    <ul class="space-y-2 text-gray-400">
+                        <li>Lawn Care</li>
+                        <li>Spring &amp; Fall Cleanup</li>
+                        <li>Landscape Maintenance</li>
+                        <li>Mowing &amp; Trimming</li>
+                    </ul>
+                </div>
+                <div>
+                    <h5 class="font-semibold mb-4">Contact</h5>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><i class="fas fa-phone mr-2"></i>(715) 613-0536</li>
+                        <li><i class="fas fa-envelope mr-2"></i>trimlinelawncarellc@yahoo.com</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 pt-8 mt-8 text-center text-gray-400">
+                <p>© 2024 Trimline Lawn Care LLC. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Dark mode detection
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.classList.add('dark');
+        }
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+            if (event.matches) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        });
+
+        // Mobile menu toggle
+        document.getElementById('mobile-menu-button').addEventListener('click', function() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        });
+
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+                // Close mobile menu if open
+                document.getElementById('mobile-menu').classList.add('hidden');
+            });
+        });
+
+        // Form submission (placeholder)
+        document.querySelector('form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            // Create custom modal instead of alert
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+            modal.innerHTML = `
+                <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg max-w-sm w-full mx-4">
+                    <div class="text-center">
+                        <i class="fas fa-check-circle text-4xl text-green-500 mb-4"></i>
+                        <h3 class="text-lg font-semibold mb-2">Thank You!</h3>
+                        <p class="text-gray-600 dark:text-gray-400 mb-4">Your message has been received. Bryan will contact you soon!</p>
+                        <button class="px-4 py-2 bg-primary text-white hover:bg-secondary rounded" onclick="this.closest('.fixed').remove()">Close</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            this.reset();
+        });
+    </script>
+
+
+</body></html>
