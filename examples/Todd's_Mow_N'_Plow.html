@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://code.jquery.com https://unpkg.com https://d3js.org https://threejs.org https://cdn.plot.ly https://stackpath.bootstrapcdn.com https://maps.googleapis.com https://cdn.tailwindcss.com https://ajax.googleapis.com https://kit.fontawesome.com https://cdn.datatables.net https://maxcdn.bootstrapcdn.com https://code.highcharts.com https://tako-static-assets-production.s3.amazonaws.com https://www.youtube.com https://fonts.googleapis.com https://fonts.gstatic.com https://pfst.cf2.poecdn.net https://puc.poecdn.net https://i.imgur.com https://wikimedia.org https://*.icons8.com https://*.giphy.com https://picsum.photos https://images.unsplash.com; frame-src 'self' https://www.youtube.com https://trytako.com; child-src 'self'; manifest-src 'self'; worker-src 'self'; upgrade-insecure-requests; block-all-mixed-content;">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todd's Mow N' Plow - Premier Lawn Care Services | Minneapolis Northwest Suburbs</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'sans': ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                    colors: {
+                        'primary': '#22c55e',
+                        'primary-dark': '#16a34a',
+                        'secondary': '#5D5CDE',
+                        'accent': '#f59e0b',
+                    },
+                    animation: {
+                        'fade-in-up': 'fadeInUp 0.6s ease-out',
+                        'fade-in': 'fadeIn 0.8s ease-out',
+                        'bounce-slow': 'bounce 2s infinite',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .gradient-bg {
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+        }
+
+        .glass-effect {
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .service-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .service-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+
+        /* Dark mode support */
+        @media (prefers-color-scheme: dark) {
+            .dark-bg { background-color: #181818; }
+            .dark-card { background-color: #1f1f1f; }
+        }
+
+        /* New gallery styling */
+        .gallery-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(200px,1fr)); gap:1rem; }
+        .gallery-grid img { width:100%; height:auto; border-radius:0.5rem; object-fit:cover; }
+    </style>
+</head>
+<body class="font-sans antialiased bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 gradient-bg rounded-lg flex items-center justify-center">
+                        <i class="fas fa-leaf text-white text-lg"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold text-primary">Todd's Mow N' Plow</h1>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">Est. 1998</p>
+                    </div>
+                </div>
+                
+                <!-- Desktop Menu -->
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="#home" class="nav-link text-gray-700 dark:text-gray-300 hover:text-primary transition-colors">Home</a>
+                    <a href="#services" class="nav-link text-gray-700 dark:text-gray-300 hover:text-primary transition-colors">Services</a>
+                    <a href="#about" class="nav-link text-gray-700 dark:text-gray-300 hover:text-primary transition-colors">About</a>
+                    <a href="#contact" class="nav-link text-gray-700 dark:text-gray-300 hover:text-primary transition-colors">Contact</a>
+                    <a href="tel:612-508-9435" class="bg-primary hover:bg-primary-dark text-white px-6 py-2 rounded-full transition-all duration-300 font-medium">
+                        <i class="fas fa-phone mr-2"></i>Call Now
+                    </a>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <button id="mobile-menu-btn" class="md:hidden text-gray-700 dark:text-gray-300">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="md:hidden hidden bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
+            <div class="px-4 py-3 space-y-3">
+                <a href="#home" class="block text-gray-700 dark:text-gray-300 hover:text-primary">Home</a>
+                <a href="#services" class="block text-gray-700 dark:text-gray-300 hover:text-primary">Services</a>
+                <a href="#about" class="block text-gray-700 dark:text-gray-300 hover:text-primary">About</a>
+                <a href="#contact" class="block text-gray-700 dark:text-gray-300 hover:text-primary">Contact</a>
+                <a href="tel:612-508-9435" class="block bg-primary text-white text-center py-2 rounded-lg">
+                    <i class="fas fa-phone mr-2"></i>Call Now
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="relative min-h-screen flex items-center justify-center overflow-hidden">
+        <!-- Use your GIF as full‐screen background -->
+        <img src="https://toddsmownplow.com/assets/images/TMNP-2gif.63105800.gif"
+             alt="Animated Lawn Care" 
+             class="absolute inset-0 w-full h-full object-cover"/>
+        <div class="absolute inset-0 bg-black/40"></div>
+        
+        <!-- Add logo watermark in hero background -->
+        <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <!-- Fallback: use the leaf icon as semi-transparent watermark -->
+            <i class="fas fa-leaf text-white opacity-10 text-9xl"></i>
+        </div>
+
+        <div class="relative z-10 text-center text-white px-4 animate-fade-in-up">
+            <h1 class="text-5xl md:text-7xl font-bold mb-6 leading-tight">
+                Premium Lawn Care<br>
+                <span class="text-accent">Since 1998</span>
+            </h1>
+            <p class="text-xl md:text-2xl mb-8 max-w-3xl mx-auto leading-relaxed font-light">
+                Serving the Northwest suburbs of Minneapolis with professional lawn mowing, fertilizing, aeration, and snow plowing services.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="#contact"
+                   class="bg-white text-primary px-8 py-4 rounded-full text-lg font-semibold hover:bg-gray-100 transition transform hover:scale-105">
+                   Get Free Estimate
+                </a>
+                <a href="tel:612-508-9435"
+                   class="border-2 border-white text-white px-8 py-4 rounded-full text-lg font-semibold hover:bg-white hover:text-primary transition">
+                   <i class="fas fa-phone mr-2"></i>Call Us
+                </a>
+            </div>
+        </div>
+
+        <!-- Scroll indicator -->
+        <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-white animate-bounce-slow">
+            <i class="fas fa-chevron-down text-2xl"></i>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="py-20 bg-gray-50 dark:bg-gray-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16 animate-fade-in-up">
+                <h2 class="text-4xl md:text-5xl font-bold mb-6 text-gray-900 dark:text-white">Our Services</h2>
+                <p class="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+                    We focus exclusively on lawn care because that's what we do best. No landscaping, no handyman work - just superior lawn services.
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Lawn Mowing -->
+                <div class="service-card bg-white dark:dark-card rounded-2xl p-8 shadow-lg">
+                    <div class="w-16 h-16 gradient-bg rounded-full flex items-center justify-center mb-6">
+                        <i class="fas fa-cut text-white text-2xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4 text-gray-900 dark:text-white">Lawn Mowing</h3>
+                    <p class="text-gray-600 dark:text-gray-300 mb-6">Professional weekly mowing with sharp blades, proper height adjustment, and consistent scheduling. No job too big or small.</p>
+                    <ul class="text-sm text-gray-500 dark:text-gray-400 space-y-2">
+                        <li><i class="fas fa-check text-primary mr-2"></i>Weekly blade sharpening</li>
+                        <li><i class="fas fa-check text-primary mr-2"></i>Seasonal height adjustment</li>
+                        <li><i class="fas fa-check text-primary mr-2"></i>Residential &amp; commercial</li>
+                    </ul>
+                </div>
+
+                <!-- Fertilizing -->
+                <div class="service-card bg-white dark:dark-card rounded-2xl p-8 shadow-lg">
+                    <div class="w-16 h-16 gradient-bg rounded-full flex items-center justify-center mb-6">
+                        <i class="fas fa-seedling text-white text-2xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4 text-gray-900 dark:text-white">Fertilizing &amp; Weed Control</h3>
+                    <p class="text-gray-600 dark:text-gray-300 mb-6">Comprehensive 6-step fertilizer program with pre-emergent, weed control, and winterizing treatments.</p>
+                    <ul class="text-sm text-gray-500 dark:text-gray-400 space-y-2">
+                        <li><i class="fas fa-check text-primary mr-2"></i>Custom fertilizer programs</li>
+                        <li><i class="fas fa-check text-primary mr-2"></i>Pre-emergent treatments</li>
+                        <li><i class="fas fa-check text-primary mr-2"></i>Seasonal weed control</li>
+                    </ul>
+                </div>
+
+                <!-- Aeration -->
+                <div class="service-card bg-white dark:dark-card rounded-2xl p-8 shadow-lg">
+                    <div class="w-16 h-16 gradient-bg rounded-full flex items-center justify-center mb-6">
+                        <i class="fas fa-circle-notch text-white text-2xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4 text-gray-900 dark:text-white">Core Aeration</h3>
+                    <p class="text-gray-600 dark:text-gray-300 mb-6">Professional core aeration to reduce soil compaction, improve water absorption, and promote deeper root growth.</p>
+                    <ul class="text-sm text-gray-500 dark:text-gray-400 space-y-2">
+                        <li><i class="fas fa-check text-primary mr-2"></i>Reduces thatch buildup</li>
+                        <li><i class="fas fa-check text-primary mr-2"></i>Improves water efficiency</li>
+                        <li><i class="fas fa-check text-primary mr-2"></i>Creates healthier roots</li>
+                    </ul>
+                </div>
+
+                <!-- De-thatching -->
+                <div class="service-card bg-white dark:dark-card rounded-2xl p-8 shadow-lg">
+                    <div class="w-16 h-16 gradient-bg rounded-full flex items-center justify-center mb-6">
+                        <i class="fas fa-rake text-white text-2xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4 text-gray-900 dark:text-white">De-thatching</h3>
+                    <p class="text-gray-600 dark:text-gray-300 mb-6">Remove excess thatch layer to allow water, fertilizer, and air to reach your lawn's root system effectively.</p>
+                    <ul class="text-sm text-gray-500 dark:text-gray-400 space-y-2">
+                        <li><i class="fas fa-check text-primary mr-2"></i>Spring preparation</li>
+                        <li><i class="fas fa-check text-primary mr-2"></i>Multiple passes</li>
+                        <li><i class="fas fa-check text-primary mr-2"></i>Complete cleanup</li>
+                    </ul>
+                </div>
+
+                <!-- Seasonal Cleanup -->
+                <div class="service-card bg-white dark:dark-card rounded-2xl p-8 shadow-lg">
+                    <div class="w-16 h-16 gradient-bg rounded-full flex items-center justify-center mb-6">
+                        <i class="fas fa-leaf text-white text-2xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4 text-gray-900 dark:text-white">Spring &amp; Fall Cleanup</h3>
+                    <p class="text-gray-600 dark:text-gray-300 mb-6">Comprehensive seasonal cleanup services including leaf removal, bed cleanup, and lawn preparation.</p>
+                    <ul class="text-sm text-gray-500 dark:text-gray-400 space-y-2">
+                        <li><i class="fas fa-check text-primary mr-2"></i>Leaf mulching &amp; removal</li>
+                        <li><i class="fas fa-check text-primary mr-2"></i>Bed cleanup</li>
+                        <li><i class="fas fa-check text-primary mr-2"></i>Shrub trimming</li>
+                    </ul>
+                </div>
+
+                <!-- Snow Plowing -->
+                <div class="service-card bg-white dark:dark-card rounded-2xl p-8 shadow-lg">
+                    <div class="w-16 h-16 gradient-bg rounded-full flex items-center justify-center mb-6">
+                        <i class="fas fa-snowflake text-white text-2xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4 text-gray-900 dark:text-white">Snow Plowing</h3>
+                    <p class="text-gray-600 dark:text-gray-300 mb-6">Reliable winter snow removal for residential and commercial properties with salting and sanding services.</p>
+                    <ul class="text-sm text-gray-500 dark:text-gray-400 space-y-2">
+                        <li><i class="fas fa-check text-primary mr-2"></i>24/7 snow removal</li>
+                        <li><i class="fas fa-check text-primary mr-2"></i>Salting &amp; sanding</li>
+                        <li><i class="fas fa-check text-primary mr-2"></i>Commercial &amp; residential</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- New Gallery Section -->
+    <section id="gallery" class="py-16 bg-gray-50 dark:bg-gray-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-4xl font-bold mb-8 text-gray-900 dark:text-white text-center">Our Work in Action</h2>
+            <div class="gallery-grid">
+                <!-- Replace with real image URLs -->
+                <img src="https://picsum.photos/seed/1/600/400" alt="Work Sample 1" loading="lazy"/>
+                <img src="https://picsum.photos/seed/2/600/400" alt="Work Sample 2" loading="lazy"/>
+                <img src="https://picsum.photos/seed/3/600/400" alt="Work Sample 3" loading="lazy"/>
+                <img src="https://picsum.photos/seed/4/600/400" alt="Work Sample 4" loading="lazy"/>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-20 bg-white dark:bg-gray-900">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid lg:grid-cols-2 gap-12 items-center">
+                <div class="animate-fade-in-up">
+                    <h2 class="text-4xl md:text-5xl font-bold mb-6 text-gray-900 dark:text-white">About Todd's Mow N' Plow</h2>
+                    <p class="text-xl text-gray-600 dark:text-gray-300 mb-6 leading-relaxed">
+                        Started from a basement in 1998, Todd's Mow N' Plow has grown into the premier lawn care service for the Northwest suburbs of Minneapolis.
+                    </p>
+                    <p class="text-gray-600 dark:text-gray-300 mb-8 leading-relaxed">
+                        We've built our reputation on focusing exclusively on lawn care - no landscaping, no handyman work, just superior lawn services. This specialized focus allows us to deliver exceptional results that larger, diversified companies simply can't match.
+                    </p>
+                    
+                    <div class="grid grid-cols-2 gap-6 mb-8">
+                        <div class="text-center p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                            <div class="text-3xl font-bold text-primary mb-2">25+</div>
+                            <div class="text-gray-600 dark:text-gray-300">Years Experience</div>
+                        </div>
+                        <div class="text-center p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                            <div class="text-3xl font-bold text-primary mb-2">1000+</div>
+                            <div class="text-gray-600 dark:text-gray-300">Happy Customers</div>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <a href="#contact" class="bg-primary hover:bg-primary-dark text-white px-8 py-3 rounded-full font-semibold transition-all duration-300 text-center">
+                            Get Started Today
+                        </a>
+                        <a href="tel:612-508-9435" class="border-2 border-primary text-primary hover:bg-primary hover:text-white px-8 py-3 rounded-full font-semibold transition-all duration-300 text-center">
+                            Call Us Now
+                        </a>
+                    </div>
+                </div>
+
+                <div class="relative">
+                    <div class="aspect-square bg-gradient-to-br from-primary to-primary-dark rounded-3xl p-8 text-white">
+                        <div class="h-full flex flex-col justify-center">
+                            <i class="fas fa-quote-left text-4xl mb-6 opacity-50"></i>
+                            <blockquote class="text-xl leading-relaxed mb-6">
+                                "We know lawns because that is our focus. We don't landscape, install sprinklers, do handyman work or manage pest control - we stick to the lawn and that is why we're the best."
+                            </blockquote>
+                            <cite class="text-lg font-semibold">- Todd, Founder</cite>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Service Areas -->
+    <section class="py-16 bg-gray-50 dark:bg-gray-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h3 class="text-3xl font-bold mb-8 text-gray-900 dark:text-white">Service Areas</h3>
+            <p class="text-lg text-gray-600 dark:text-gray-300 mb-8">Proudly serving the Northwest suburbs of Minneapolis</p>
+            <div class="flex flex-wrap justify-center gap-4 text-gray-700 dark:text-gray-300">
+                <span class="bg-white dark:bg-gray-700 px-4 py-2 rounded-full">Maple Grove</span>
+                <span class="bg-white dark:bg-gray-700 px-4 py-2 rounded-full">Plymouth</span>
+                <span class="bg-white dark:bg-gray-700 px-4 py-2 rounded-full">Brooklyn Park</span>
+                <span class="bg-white dark:bg-gray-700 px-4 py-2 rounded-full">Brooklyn Center</span>
+                <span class="bg-white dark:bg-gray-700 px-4 py-2 rounded-full">Crystal</span>
+                <span class="bg-white dark:bg-gray-700 px-4 py-2 rounded-full">New Hope</span>
+                <span class="bg-white dark:bg-gray-700 px-4 py-2 rounded-full">Champlin</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-20 bg-white dark:bg-gray-900">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-5xl font-bold mb-6 text-gray-900 dark:text-white">Get Your Free Estimate</h2>
+                <p class="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+                    Ready to transform your lawn? Contact us today for a free, no-obligation estimate.
+                </p>
+            </div>
+
+            <div class="grid lg:grid-cols-2 gap-12">
+                <!-- Contact Info -->
+                <div class="space-y-8">
+                    <div class="bg-gradient-to-br from-primary to-primary-dark text-white p-8 rounded-2xl">
+                        <h3 class="text-2xl font-bold mb-6">Get In Touch</h3>
+                        
+                        <div class="space-y-4">
+                            <div class="flex items-center space-x-4">
+                                <i class="fas fa-phone text-xl"></i>
+                                <div>
+                                    <p class="font-semibold">Phone</p>
+                                    <a href="tel:612-508-9435" class="text-lg hover:underline">612-508-9435</a>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center space-x-4">
+                                <i class="fas fa-envelope text-xl"></i>
+                                <div>
+                                    <p class="font-semibold">Email</p>
+                                    <a href="mailto:todd@toddsmownplow.com" class="hover:underline">todd@toddsmownplow.com</a>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center space-x-4">
+                                <i class="fas fa-map-marker-alt text-xl"></i>
+                                <div>
+                                    <p class="font-semibold">Service Area</p>
+                                    <p>Minneapolis Northwest Suburbs</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-gray-50 dark:bg-gray-800 p-8 rounded-2xl">
+                        <h4 class="text-xl font-bold mb-4 text-gray-900 dark:text-white">Why Choose Us?</h4>
+                        <ul class="space-y-3 text-gray-600 dark:text-gray-300">
+                            <li><i class="fas fa-check text-primary mr-3"></i>25+ years of experience</li>
+                            <li><i class="fas fa-check text-primary mr-3"></i>Lawn care specialists only</li>
+                            <li><i class="fas fa-check text-primary mr-3"></i>Weekly blade sharpening</li>
+                            <li><i class="fas fa-check text-primary mr-3"></i>Free estimates</li>
+                            <li><i class="fas fa-check text-primary mr-3"></i>Locally owned &amp; operated</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Contact Form -->
+                <div class="bg-gray-50 dark:bg-gray-800 p-8 rounded-2xl">
+                    <form id="contact-form" class="space-y-6">
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Name *</label>
+                                <input type="text" required="" class="w-full px-4 py-3 text-base border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent dark:bg-gray-700 dark:text-white">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Phone</label>
+                                <input type="tel" class="w-full px-4 py-3 text-base border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent dark:bg-gray-700 dark:text-white">
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Email</label>
+                            <input type="email" class="w-full px-4 py-3 text-base border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent dark:bg-gray-700 dark:text-white">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Address &amp; Zip Code *</label>
+                            <input type="text" required="" class="w-full px-4 py-3 text-base border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent dark:bg-gray-700 dark:text-white">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Services Interested In:</label>
+                            <div class="grid grid-cols-2 gap-3">
+                                <label class="flex items-center space-x-2">
+                                    <input type="checkbox" class="text-primary focus:ring-primary rounded">
+                                    <span class="text-sm text-gray-700 dark:text-gray-300">Lawn Mowing</span>
+                                </label>
+                                <label class="flex items-center space-x-2">
+                                    <input type="checkbox" class="text-primary focus:ring-primary rounded">
+                                    <span class="text-sm text-gray-700 dark:text-gray-300">Fertilizing</span>
+                                </label>
+                                <label class="flex items-center space-x-2">
+                                    <input type="checkbox" class="text-primary focus:ring-primary rounded">
+                                    <span class="text-sm text-gray-700 dark:text-gray-300">Aeration</span>
+                                </label>
+                                <label class="flex items-center space-x-2">
+                                    <input type="checkbox" class="text-primary focus:ring-primary rounded">
+                                    <span class="text-sm text-gray-700 dark:text-gray-300">De-thatching</span>
+                                </label>
+                                <label class="flex items-center space-x-2">
+                                    <input type="checkbox" class="text-primary focus:ring-primary rounded">
+                                    <span class="text-sm text-gray-700 dark:text-gray-300">Spring Cleanup</span>
+                                </label>
+                                <label class="flex items-center space-x-2">
+                                    <input type="checkbox" class="text-primary focus:ring-primary rounded">
+                                    <span class="text-sm text-gray-700 dark:text-gray-300">Snow Plowing</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Additional Comments</label>
+                            <textarea rows="4" class="w-full px-4 py-3 text-base border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent dark:bg-gray-700 dark:text-white"></textarea>
+                        </div>
+                        
+                        <button type="submit" class="w-full bg-primary hover:bg-primary-dark text-white py-4 rounded-lg text-lg font-semibold transition-all duration-300 transform hover:scale-105">
+                            Get My Free Estimate
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-3 gap-8">
+                <div>
+                    <div class="flex items-center space-x-3 mb-4">
+                        <div class="w-10 h-10 gradient-bg rounded-lg flex items-center justify-center">
+                            <i class="fas fa-leaf text-white text-lg"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-primary">Todd's Mow N' Plow</h3>
+                            <p class="text-sm text-gray-400">Est. 1998</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-300 mb-4">Professional lawn care services for the Northwest suburbs of Minneapolis since 1998.</p>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Services</h4>
+                    <ul class="space-y-2 text-gray-300">
+                        <li>Lawn Mowing</li>
+                        <li>Fertilizing &amp; Weed Control</li>
+                        <li>Aeration</li>
+                        <li>De-thatching</li>
+                        <li>Seasonal Cleanup</li>
+                        <li>Snow Plowing</li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Contact Info</h4>
+                    <div class="space-y-3 text-gray-300">
+                        <p><i class="fas fa-phone mr-2 text-primary"></i>612-508-9435</p>
+                        <p><i class="fas fa-envelope mr-2 text-primary"></i>todd@toddsmownplow.com</p>
+                        <p><i class="fas fa-map-marker-alt mr-2 text-primary"></i>Maple Grove, MN</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
+                <p>© <span id="year"></span> Todd's Mow N' Plow. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Dark mode detection
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.classList.add('dark');
+        }
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+            if (event.matches) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        });
+
+        // Mobile menu toggle
+        document.getElementById('mobile-menu-btn').addEventListener('click', function() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        });
+
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                    // Close mobile menu if open
+                    document.getElementById('mobile-menu').classList.add('hidden');
+                }
+            });
+        });
+
+        // Form submission
+        document.getElementById('contact-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Create custom success modal
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+            modal.innerHTML = `
+                <div class="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-lg max-w-md w-full mx-4 text-center">
+                    <div class="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-check text-white text-2xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4 text-gray-900 dark:text-white">Thank You!</h3>
+                    <p class="text-gray-600 dark:text-gray-300 mb-6">Your message has been sent successfully. We'll contact you within 24 hours with your free estimate.</p>
+                    <button onclick="this.closest('.fixed').remove()" class="bg-primary hover:bg-primary-dark text-white px-6 py-3 rounded-lg font-semibold transition-colors">Close</button>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            
+            // Reset form
+            this.reset();
+        });
+
+        // Auto-update footer year
+        document.getElementById('year').textContent = new Date().getFullYear();
+
+        // Scroll animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver(function(entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.animationPlayState = 'running';
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.animate-fade-in-up').forEach(el => {
+            observer.observe(el);
+        });
+    </script>
+
+
+</body>
+</html>
